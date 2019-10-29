@@ -24,7 +24,7 @@
  
 For support, join our support discord server.
  
-[![Discord](https://discordapp.com/api/guilds/0000000000000000/widget.png?style=banner2)](https://discord.gg/0000000)
+[![Discord](https://discordapp.com/api/guilds/626585520922951690/widget.png?style=banner2)](https://discord.gg/sG7KSbW)
  
 ## 🧱 Built With
  
