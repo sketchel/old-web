@@ -1,0 +1,62 @@
+doctype html
+html 
+  include includes/head.pug
+
+  body
+    if authorized
+        include includes/navbar-2.pug
+    if !authorized
+        include includes/navbar-1.pug
+
+    section.hero.is-primary.is-bold
+      div.container.is-fluid
+        div.hero-body
+          h1.title Signup to Sketchel <i class="em em-spiral_note_pad" aria-role="presentation" aria-label=""></i> 
+          h2.subtitle If you have an account, look a lil bit down.
+
+
+    br 
+    if error_messages != ""
+      div.container.is-fluid
+        div.notification.is-danger
+          p <strong>Error:</strong> #{error_messages}
+    
+    br
+
+    div.container.is-fluid
+      div.box
+        div(align="center")
+          div(class="container")
+            div.container
+              form(method="POST", action="/users/signup")
+                div.field
+                  div.control
+                    input(class="input is-rounded", for="inputUsername", type="text", name="username", placeholder="username")
+                div.field
+                  div.control
+                    input(class="input is-rounded", for="inputEmail", type="email", name="email", placeholder="email")
+                div.field
+                  div.control
+                    input(class="input is-rounded", for="inputPassword", type="password", name="password", placeholder="password")
+                div.field
+                  div.control  
+                      input(class="input is-rounded", for="inputConfirmPassword", type="password", name="confirmPassword", placeholder="confirm password")                    
+                div.content.has-text-centered
+                  div.field 
+                      input.is-checkradio.is-success(type="checkbox" name="tosCheck", id="tosCheck")   
+                      label(for="tosCheck") I agree to the <a href="/tos">Terms of Service</a> and confirm I am above the age of 13.                
+
+
+                input(class="button is-success is-medium is-rounded", type="submit", value="Register")  
+              
+    br
+    div(align="center")
+      h2.subtitle Have an account already? <a href="/signup">Login here.</a>        
+
+
+    br
+    footer.footer
+      div(class="content")
+          p <strong>Sketchel</strong> © <strong>2019</strong>, made with <a href="https://bulma.io">Bulma</a>, <a href="https://expressjs.com/">Express</a> and <a href="https://pugjs.com/">Pug</a> & more libraries, and also <span class="icon has-text-danger"><i class="fas fa-heart"></i></span>.
+          p <a href="/rules">Rules</a> | <a href="/terms">Terms of Service</a> | <a>Privacy Policy</a>                    
+          p <strong>Quote:</strong> #{quote}                

@@ -1,40 +1,50 @@
 {
-  "name": "src",
-  "version": "0.1.0",
-  "private": true,
-  "dependencies": {
-    "react": "^16.11.0",
-    "react-dom": "^16.11.0",
-    "react-scripts": "3.2.0"
-  },
+  "name": "sketchel",
+  "version": "0.0.1",
+  "description": "A modern, community-driven, social drawing website.",
+  "main": "server.js",
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "start": "nodemon index.js",
+    "css-build": "node-sass --omit-source-map-url public/scss/style.scss public/css/style.css",
+    "css-watch": "npm run css-build -- --watch"
   },
-  "eslintConfig": {
-    "extends": "react-app"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sketchel/sketchel.git"
   },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+  "keywords": [
+    "drawing",
+    "website",
+    "social",
+    "sketchel"
+  ],
+  "author": "Minota",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sketchel/sketchel/issues"
   },
+  "homepage": "https://github.com/sketchel/sketchel#readme",
   "devDependencies": {
-    "@chakra-ui/core": "^0.4.1",
-    "@emotion/core": "^10.0.22",
-    "@emotion/styled": "^10.0.22",
-    "emotion-theming": "^10.0.19",
-    "react-icons": "^3.8.0",
-    "react-photo-gallery": "^8.0.0",
-    "react-router-dom": "^5.1.2"
+    "body-parser": "^1.19.0",
+    "bulma": "^0.8.0",
+    "cookie-parser": "^1.4.4",
+    "date-and-time": "^0.10.0",
+    "express": "^4.17.1",
+    "morgan": "^1.9.1",
+    "node-sass": "^4.13.0",
+    "nodemon": "^1.19.4",
+    "path": "^0.12.7",
+    "quick.db": "^7.0.0-b22"
+  },
+  "dependencies": {
+    "bulma-checkradio": "^1.1.1",
+    "bulma-divider": "^0.2.0",
+    "bulma-tooltip": "^3.0.2",
+    "connect-flash": "^0.1.1",
+    "express-session": "^1.17.0",
+    "passport": "^0.4.0",
+    "pug": "^2.0.4",
+    "session": "^0.1.0",
+    "uuid": "^3.3.3"
   }
 }

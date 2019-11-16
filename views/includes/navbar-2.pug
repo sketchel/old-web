@@ -1,0 +1,25 @@
+nav.navbar.is-spaced(role="navigation", aria-label="main navigation")
+    div.navbar-brand
+    figure(class="image is-48x48")
+        img(class="image is-48x48", src="/assets/sketchel-small.png")  
+    div.navbar-menu.is-active(id="navbar")
+        div.navbar-start
+            a.navbar-item(href="/") <i class="fas fa-home"></i>&nbsp;Home
+            a.navbar-item(href="/feed") <i class="fas fa-rss"></i>&nbsp;Feed
+            a.navbar-item(href="/hot") <i class="fas fa-fire"></i>&nbsp;Popular 
+            
+            
+        div.navbar-end
+            
+            a.navbar-item(href="/notifications") <i class="fas fa-bell"></i>&nbsp;Notifications
+            a.navbar-item(href="/create") <i class="fas fa-paint-brush"></i>&nbsp;Create
+            div.navbar-item.has-dropdown.is-hoverable
+
+                a.navbar-link #{username}
+
+                div.navbar-dropdown
+                    a.navbar-item(href="/profile") Profile
+                    a.navbar-item(href="/settings") Settings
+                    hr.navbar-divider
+                    a.navbar-item(href="/logout") Logout
+                                            

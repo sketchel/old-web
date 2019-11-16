@@ -1,0 +1,50 @@
+doctype html
+html 
+  include includes/head.pug
+
+  body
+    if authorized
+        include includes/navbar-2.pug
+    if !authorized
+        include includes/navbar-1.pug
+
+    section.hero.is-primary.is-bold
+      div.container.is-fluid
+        div.hero-body
+          h1.title Login to Sketchel <i class="em em-spiral_note_pad" aria-role="presentation" aria-label=""></i> 
+          h2.subtitle If you don't have an account, look a lil bit down.
+
+    br
+    if error_messages != ""
+      div.container.is-fluid
+        div.notification.is-danger
+          p <strong>Error:</strong> #{error_messages}
+
+    br 
+    div.container.is-fluid
+      div.box
+        div(align="center")
+          div(class="container")
+            div.container
+              form(method="POST", action="/users/login")
+                div.field
+                  div.control
+                    input(class="input is-rounded", for="inputUsername", type="text", name="username", placeholder="login")
+                div.field
+                  div.control
+                    input(class="input is-rounded", for="inputPassword", type="password", name="password", placeholder="password")
+                br
+                br  
+                input(class="button is-success is-medium is-rounded", type="submit", value="Login")  
+              
+    br
+    div(align="center")
+      h2.subtitle New to the site? <a href="/signup">Register here.</a>        
+
+
+    br
+    footer.footer
+      div(class="content")
+          p <strong>Sketchel</strong> © <strong>2019</strong>, made with <a href="https://bulma.io">Bulma</a>, <a href="https://expressjs.com/">Express</a> and <a href="https://pugjs.com/">Pug</a> & more libraries, and also <span class="icon has-text-danger"><i class="fas fa-heart"></i></span>.
+          p <a href="/rules">Rules</a> | <a href="/terms">Terms of Service</a> | <a>Privacy Policy</a>                    
+          p <strong>Quote:</strong> #{quote}                

@@ -1,0 +1,53 @@
+doctype html
+html 
+  include includes/head.pug
+  body 
+    if user = true
+        include includes/navbar-2.pug
+    if user = ""
+        include includes/navbar-1.pug
+
+    section.hero.is-primary.is-bold
+      div.hero-body
+        div.container.is-fluid
+          h1.title Rules for Sketchel <i class="em em-newspaper" aria-role="presentation" aria-label="NEWSPAPER"></i>
+          h2.subtitle Guidelines on what not to do.
+          div.columns.is-multiline
+              div.column.is-one-third
+                  div.box
+                      article(class="notification has-background-white media")
+                          figure(class="media-left")
+                              a(href="/")
+                                  span(class="icon")
+                                      i(class="animated pulse fas fa-home fa-2x")
+                          div(class="media-content")
+                              a.button.is-white(href="/") Wanna go home?
+
+    br
+    div.container
+        div.box
+            div.container.is-fluid
+                h1.title.is-size-3 Rule #1
+                h2.subtitle You must be 13 years of age or older to use this site.
+                br
+                h1.title.is-size-3 Rule #2
+                h2.subtitle You may not harass users on this site for any reason whatsoever.
+                br
+                h1.title.is-size-3 Rule #3
+                h2.subtitle Don’t abuse anything you’re given access to in Sketchel  
+                br
+                h1.title.is-size-3 Rule #4
+                h2.subtitle Don’t post porn without NSFW option toggled on, you will be suspended on multiple offenses. 
+                br
+                h1.title.is-size-3 Rule #5
+                h2.subtitle Don’t do anything that’ll get you arrested in real life.   
+                br
+                h1.title.is-size-3 Rule #6
+                h2.subtitle Do not post extreme gore, this will result in your post being removed. 
+                br                           
+    br
+    footer.footer
+      div(class="content")
+          p <strong>Sketchel</strong> © <strong>2019</strong>, made with <a href="https://bulma.io">Bulma</a>, <a href="https://expressjs.com/">Express</a> and <a href="https://pugjs.com/">Pug</a> & more libraries, and also <span class="icon has-text-danger"><i class="fas fa-heart"></i></span>.
+          p <a href="/rules">Rules</a> | <a href="/terms">Terms of Service</a> | <a>Privacy Policy</a>                    
+          p <strong>Quote:</strong> #{quote}    
