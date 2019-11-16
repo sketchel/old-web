@@ -1,4 +1,7 @@
 <div align="center">
+  
+  ![Logo](public/assets/sketchel-small.png)
+  
   <h1>Sketchel</h1>
   A simple community-driven drawing application.
   
