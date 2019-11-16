@@ -64,6 +64,20 @@ function getUser(cookies) {
   }
 }
 
+function removeA (arr) { // Credit: github.com/zetari
+  let what
+  let a = arguments
+  let L = a.length
+  let ax
+  while (L > 1 && arr.length) {
+    what = a[--L]
+    while ((ax = arr.indexOf(what)) !== -1) {
+      arr.splice(ax, 1)
+    }
+  }
+  return arr
+} 
+
 function isAlphaNumeric(str) {
   var code, i, len;
 
@@ -149,11 +163,59 @@ app.get('/settings', (req, res) => {
     res.render('settings', { quote: quote, username: username, authorized: "true" })
   }
 });
-app.get('/follow/:userId', (req, res) => {
-  if (!req.params.userId) {
-    res.render('404')
-  }
+app.get('/profile/:userId', (req, res) => {
+  var user = getUser(req.cookies) 
   var quote = getQuote()
+  if (!req.params.userId) {
+    res.redirect('/profile')
+  }
+  var profile_user = db.get(req.params.userId);
+  if (!profile_user) {
+    res.render('404', { quote: quote })
+  }
+  if (user) {
+    if (req.params.userId === user) {
+      res.redirect('/profile')
+    }
+  }
+  var username = req.params.userId;
+  var bio = db.get(`${req.params.userId}.bio`)
+  var avatar = db.get(`${req.params.userId}.avatar`)
+  var rank = db.get(`${req.params.userId}.rank`)
+  var following = db.get(`${req.params.userId}.following`)
+  var followers = db.get(`${req.params.userId}.followers`)
+  var joindate = db.get(`${req.params.userId}.joindate`)
+  var follow_status = db.get(`${req.params.userId}.followers_list`).includes(user);
+  if (!follow_status) {
+    res.render('user-profile', { quote: quote, 
+      username: username, 
+      bio: bio, 
+      avatar: avatar, 
+      rank: rank, 
+      followers: followers, 
+      following: following, 
+      authorized: "true",
+      joindate: joindate
+    })
+  } else {
+    res.render('user-profile', { quote: quote, 
+      username: username, 
+      bio: bio, 
+      avatar: avatar, 
+      rank: rank, 
+      followers: followers, 
+      following: following, 
+      is_followed: "true",
+      authorized: "true",
+      joindate: joindate
+    })
+  }
+})
+app.get('/follow/:userId', (req, res) => {
+  var quote = getQuote()
+  if (!req.params.userId) {
+    res.render('404', { quote: quote })
+  }
   var user = getUser(req.cookies) 
   if (!user) {
     res.render('not-logged-in', { quote: quote })
@@ -176,7 +238,39 @@ app.get('/follow/:userId', (req, res) => {
     res.redirect(`/profile/${req.params.userId}`)
   }
 })
+app.get('/unfollow/:userId', (req, res) => {
+  var quote = getQuote()
+  if (!req.params.userId) {
+    res.render('404', { quote: quote })
+  }
+  var user = getUser(req.cookies) 
+  if (!user) {
+    res.render('not-logged-in', { quote: quote })
+  }
+  var to_follow = db.get(req.params.userId);
+  if (!to_follow) {
+    res.render("404", { quote: quote })
+  }
+  if (req.params.userId === user) {
+    res.redirect("/profile")
+  } else {
+    if (!db.get(`${req.params.userId}.followers_list`).includes(user)) {
+      res.redirect(`/profile/${req.params.userId}`)
+      return
+    }
+    var follower_list = db.get(`${req.params.userId}.followers_list`)
+    var updated_follower_list = removeA(follower_list, user)
+    db.set(`${req.params.userId}.followers_list`, updated_follower_list)
+    var following_list = db.get(`${user}.following_list`)
+    var updated_following_list = removeA(following_list, req.params.userId)
+    db.set(`${user}.following_list`, updated_following_list)
 
+    db.subtract(`${req.params.userId}.followers`, 1)
+    db.subtract(`${user}.following`, 1)
+    db.push(`${user}.following_list`, user)
+    res.redirect(`/profile/${req.params.userId}`)
+  }
+})
 app.get('/profile', (req, res) => {
   var quote = getQuote()
   var user = getUser(req.cookies) 

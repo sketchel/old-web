@@ -1,0 +1,47 @@
+
+doctype html
+html 
+  include includes/head.pug
+
+  body
+    if authorized
+        include includes/navbar-2.pug
+    if !authorized
+        include includes/navbar-1.pug
+
+    div.container.is-fluid
+        div.columns
+            div.column
+                div.box
+                    content.has-text-centered
+                        article(class="notification has-background-white media")
+                            figure(class="media-left")
+                                figure(class="image is-128x128")
+                                    img(class="image is-128x128", src=avatar)  
+                            div(class="media-content")
+                                span.tag.is-primary #{rank}
+                                h1.title.is-size-4 #{username}
+                                p.subtitle.is-size-5 #{bio}
+                                p.subtitle-is-size-5 Joined at <strong>#{joindate}</strong>
+                    div.container.is-fluid
+                        div.buttons
+                            if !authorized
+                                a.button.is-primary(disabled) <strong>Follow</strong>&nbsp;#{followers}
+                            if authorized
+                                if is_followed
+                                    a.button.is-primary(href="/unfollow/" + username) <strong>Unfollow</strong>&nbsp;#{followers}
+                                if !is_followed
+                                    a.button.is-primary(href="/follow/" + username) <strong>Follow</strong>&nbsp;#{followers}
+                            a.button.is-primary(href="/following/" + username) <strong>Following</strong>&nbsp;#{following}
+    br   
+    div.container.is-fluid
+        div.box
+            h1.title This empty box is actually supposed to represent the animations of the user.
+            h2.subtitle But I can't do that at the moment.
+    br
+                                        
+    footer.footer
+      div(class="content")
+          p <strong>Sketchel</strong> © <strong>2019</strong>, made with <a href="https://bulma.io">Bulma</a>, <a href="https://expressjs.com/">Express</a> and <a href="https://pugjs.com/">Pug</a> & more libraries, and also <span class="icon has-text-danger"><i class="fas fa-heart"></i></span>.
+          p <a href="/rules">Rules</a> | <a href="/terms">Terms of Service</a> | <a>Privacy Policy</a>                    
+          p <strong>Quote:</strong> #{quote}                

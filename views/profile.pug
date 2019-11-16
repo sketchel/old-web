@@ -25,13 +25,13 @@ html
                                     p.subtitle.is-size-5 #{bio}
                                     p.subtitle-is-size-5 Joined at <strong>#{joindate}</strong>
 
-                        div(align="center")
+                        div.container.is-fluid
                             div.buttons
                                 a.button.is-primary(disabled) <strong>Follow</strong>&nbsp; #{followers}
                                 a.button.is-primary(href="/following/" + username) <strong>Following</strong>&nbsp; #{following}
                                 a.button.is-link(href="/profile/option/editbio")
                                     span.icon.is-small
-                                            i.fas.fa-edit 
+                                        i.fas.fa-edit 
         br   
         div.container.is-fluid
             div.box
