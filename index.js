@@ -5,13 +5,14 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const passport = require('passport');
 const session = require('express-session');
-const chalk = require('chalk');
 const uuidv4 = require('uuid/v4');
 const date = require('date-and-time');
 const bcrypt = require('bcrypt');
 const https = require('https');
 const fs = require('fs');
 const app = express();
+
+var users = new db.table('users')
 
 var discord = {
   "oauth": {
@@ -31,7 +32,7 @@ discord.scope = () => {
 }
 
 // Anti-Deus Ex Machina
-// db.set('Minota.rank', 'owner')
+// users.set('Minota.rank', 'owner')
 
 // Views
 app.set('view engine', 'pug')
@@ -73,7 +74,7 @@ function getUser(cookies) {
     return false
   }
   var username = session.split(".")[0]
-  var session_db = db.get(`${username}.session`)
+  var session_db = users.get(`${username}.session`)
   if (session === session_db) {
     return username
   } else {
@@ -109,9 +110,24 @@ function isAlphaNumeric(str) {
   return true;
 };
 
+// User API
+
+
+// Public API
+
+
 // Load pages
 app.get('/beta/canvas', (req, res) => {
   res.render('canvas')
+})
+app.get('/beta/create', (req, res) => {
+  var quote = getQuote()
+  var user = getUser(req.cookies) 
+  if (!user) {
+    res.render('create', { quote: quote })
+  } else {
+    res.render('create', { quote: quote, username: user, authorized: "true" })
+  }
 })
 app.get('/following/:userId', (req, res) => {
   var quote = getQuote()
@@ -121,13 +137,13 @@ app.get('/following/:userId', (req, res) => {
     res.redirect('404')
     return
   }
-  var follow_list_user = db.get(`${req.params.userId}`)
+  var follow_list_user = users.get(`${req.params.userId}`)
   if (!follow_list_user) {
     res.redirect('404')
     return
   }
-  var user_to_list = db.get(`${req.params.userId}.following_list`)
-  var dark = db.get(`${user}.dark`)
+  var user_to_list = users.get(`${req.params.userId}.following_list`)
+  var dark = users.get(`${user}.dark`)
   if (dark) {
     res.render('followed-users', { dark: "true", quote: quote, user: req.params.userId, username: user, following_list: user_to_list })
   } else {
@@ -139,7 +155,7 @@ app.get('/following/:userId', (req, res) => {
 app.get('/', (req, res) => {
   var quote = getQuote()
   var user = getUser(req.cookies) 
-  var dark = db.get(`${user}.dark`)
+  var dark = users.get(`${user}.dark`)
   if (!user) {
     if (dark) {
       res.render('home', { quote: quote, dark: "true" })
@@ -160,7 +176,7 @@ app.get('/', (req, res) => {
 app.get('/welcome', (req, res) => {
   var quote = getQuote()
   var user = getUser(req.cookies) 
-  var dark = db.get(`${user}.dark`)
+  var dark = users.get(`${user}.dark`)
   if (!user) {
     if (dark) {
       res.render('welcome', { quote: quote, dark: "true" })
@@ -180,7 +196,7 @@ app.get('/welcome', (req, res) => {
 app.get('/rules', (req, res) => {
   var quote = getQuote()
   var user = getUser(req.cookies) 
-  var dark = db.get(`${user}.dark`)
+  var dark = users.get(`${user}.dark`)
   if (!user) {
     if (dark) {
       res.render('rules', { quote: quote, dark: "true" })
@@ -200,7 +216,7 @@ app.get('/rules', (req, res) => {
 app.get('/terms', (req, res) => {
   var quote = getQuote()
   var user = getUser(req.cookies) 
-  var dark = db.get(`${user}.dark`)
+  var dark = users.get(`${user}.dark`)
   if (!user) {
     if (dark) {
       res.render('terms', { quote: quote, dark: "true" })
@@ -221,7 +237,7 @@ app.get('/login', (req, res) => {
   var quote = getQuote()
   var user = getUser(req.cookies) 
   if (!user) {
-    var dark = db.get(`${user}.dark`)
+    var dark = users.get(`${user}.dark`)
     if (dark) {
       res.render('login', { quote: quote, dark: "true" })
     } else {
@@ -229,7 +245,7 @@ app.get('/login', (req, res) => {
     }
   } else {
     var username = user;
-    var dark = db.get(`${user}.dark`)
+    var dark = users.get(`${user}.dark`)
     if (dark) {
       res.render('login', { quote: quote, username: username, authorized: "true", dark: "true" })
     } else {
@@ -242,7 +258,7 @@ app.get('/signup', (req, res) => {
   var quote = getQuote()
   var user = getUser(req.cookies) 
   if (!user) {
-    var dark = db.get(`${user}.dark`)
+    var dark = users.get(`${user}.dark`)
     if (dark) {
       res.render('signup', { quote: quote, dark: "true" })
     } else {
@@ -251,7 +267,7 @@ app.get('/signup', (req, res) => {
     
   } else {
     var username = user;
-    var dark = db.get(`${user}.dark`)
+    var dark = users.get(`${user}.dark`)
     if (dark) {
       res.render('signup', { quote: quote, username: username, authorized: "true", dark: "true" })
     } else {
@@ -263,7 +279,7 @@ app.get('/settings', (req, res) => {
   var quote = getQuote()
   var user = getUser(req.cookies) 
   if (!user) {
-    var dark = db.get(`${user}.dark`)
+    var dark = users.get(`${user}.dark`)
     if (dark) {
       res.render('settings', { quote: quote, dark: "true" })
     } else {
@@ -272,7 +288,7 @@ app.get('/settings', (req, res) => {
     
   } else {
     var username = user;
-    var dark = db.get(`${user}.dark`)
+    var dark = users.get(`${user}.dark`)
     if (dark) {
       res.render('settings', { quote: quote, username: username, authorized: "true", dark: "true" })
     } else {
@@ -287,9 +303,9 @@ app.get('/profile/:userId', (req, res) => {
   if (!req.params.userId) {
     res.redirect('/profile')
   }
-  var profile_user = db.get(req.params.userId);
+  var profile_user = users.get(req.params.userId);
   if (!profile_user) {
-    var dark = db.get(`${user}.dark`)
+    var dark = users.get(`${user}.dark`)
     if (dark) {
       res.render('404', { quote: quote, dark: "true" })
     } else {
@@ -302,14 +318,16 @@ app.get('/profile/:userId', (req, res) => {
       res.redirect('/profile')
     }
   }
-  var bio = db.get(`${req.params.userId}.bio`)
-  var avatar = db.get(`${req.params.userId}.avatar`)
-  var rank = db.get(`${req.params.userId}.rank`)
-  var following = db.get(`${req.params.userId}.following`)
-  var followers = db.get(`${req.params.userId}.followers`)
-  var joindate = db.get(`${req.params.userId}.joindate`)
-  var follow_status = db.get(`${req.params.userId}.followers_list`).includes(user);
-  var dark = db.get(`${user}.dark`)
+  var bio = users.get(`${req.params.userId}.bio`)
+  var avatar = users.get(`${req.params.userId}.avatar`)
+  var rank = users.get(`${req.params.userId}.rank`)
+  var following = users.get(`${req.params.userId}.following`)
+  var followers = users.get(`${req.params.userId}.followers`)
+  var joindate = users.get(`${req.params.userId}.joindate`)
+  var follow_status = users.get(`${req.params.userId}.followers_list`).includes(user);
+  var following_list = users.get(`${req.params.userId}.following_list`);  
+  var follower_list = users.get(`${req.params.userId}.followers_list`);   
+  var dark = users.get(`${user}.dark`)
   if (!follow_status) {
     if (dark) {
       res.render('user-profile', { quote: quote, 
@@ -322,7 +340,9 @@ app.get('/profile/:userId', (req, res) => {
         following: following, 
         authorized: "true",
         joindate: joindate,
-        dark: "true"
+        dark: "true",
+        follower_list: follower_list, 
+        following_list: following_list
       })
     } else {
       res.render('user-profile', { quote: quote, 
@@ -334,7 +354,9 @@ app.get('/profile/:userId', (req, res) => {
         followers: followers, 
         following: following, 
         authorized: "true",
-        joindate: joindate
+        joindate: joindate,
+        follower_list: follower_list, 
+        following_list: following_list
       })
     }
   } else {
@@ -348,7 +370,9 @@ app.get('/profile/:userId', (req, res) => {
       following: following, 
       is_followed: "true",
       authorized: "true",
-      joindate: joindate
+      joindate: joindate,
+      follower_list: follower_list, 
+      following_list: following_list
     })
   }
 })
@@ -363,7 +387,7 @@ app.get('/follow/:userId', (req, res) => {
     res.render('not-logged-in', { quote: quote })
     return
   }
-  var to_follow = db.get(req.params.userId);
+  var to_follow = users.get(req.params.userId);
   if (!to_follow) {
     res.render("404", { quote: quote })
     return
@@ -372,14 +396,14 @@ app.get('/follow/:userId', (req, res) => {
     res.redirect("/profile")
     return
   } else {
-    if (db.get(`${req.params.userId}.followers_list`).includes(user)) {
+    if (users.get(`${req.params.userId}.followers_list`).includes(user)) {
       res.redirect(`/profile/${req.params.userId}`)
       return
     }
-    db.push(`${req.params.userId}.followers_list`, user)
-    db.add(`${req.params.userId}.followers`, 1)
-    db.add(`${user}.following`, 1)
-    db.push(`${user}.following_list`, req.params.userId)
+    users.push(`${req.params.userId}.followers_list`, user)
+    users.add(`${req.params.userId}.followers`, 1)
+    users.add(`${user}.following`, 1)
+    users.push(`${user}.following_list`, req.params.userId)
     res.redirect(`/profile/${req.params.userId}`)
   }
 })
@@ -394,7 +418,7 @@ app.get('/unfollow/:userId', (req, res) => {
     res.render('not-logged-in', { quote: quote })
     return
   }
-  var to_follow = db.get(req.params.userId);
+  var to_follow = users.get(req.params.userId);
   if (!to_follow) {
     res.render("404", { quote: quote })
     return
@@ -403,20 +427,20 @@ app.get('/unfollow/:userId', (req, res) => {
     res.redirect("/profile")
     return
   } else {
-    if (!db.get(`${req.params.userId}.followers_list`).includes(user)) {
+    if (!users.get(`${req.params.userId}.followers_list`).includes(user)) {
       res.redirect(`/profile/${req.params.userId}`)
       return
     }
-    var follower_list = db.get(`${req.params.userId}.followers_list`)
+    var follower_list = users.get(`${req.params.userId}.followers_list`)
     var updated_follower_list = removeA(follower_list, user)
-    db.set(`${req.params.userId}.followers_list`, updated_follower_list)
-    var following_list = db.get(`${user}.following_list`)
+    users.set(`${req.params.userId}.followers_list`, updated_follower_list)
+    var following_list = users.get(`${user}.following_list`)
     var updated_following_list = removeA(following_list, req.params.userId)
-    db.set(`${user}.following_list`, updated_following_list)
+    users.set(`${user}.following_list`, updated_following_list)
 
-    db.subtract(`${req.params.userId}.followers`, 1)
-    db.subtract(`${user}.following`, 1)
-    db.push(`${user}.following_list`, user)
+    users.subtract(`${req.params.userId}.followers`, 1)
+    users.subtract(`${user}.following`, 1)
+    users.push(`${user}.following_list`, user)
     res.redirect(`/profile/${req.params.userId}`)
   }
 })
@@ -427,15 +451,62 @@ app.get('/profile', (req, res) => {
     res.render('profile', { quote: quote })
   } else {
     var username = user;
-    var bio = db.get(`${user}.bio`)
-    var avatar = db.get(`${user}.avatar`)
-    var rank = db.get(`${user}.rank`)
-    var following = db.get(`${user}.following`)
-    var followers = db.get(`${user}.followers`)
-    var joindate = db.get(`${user}.joindate`)
-    var dark = db.get(`${user}.dark`)
+    var bio = users.get(`${user}.bio`)
+    var avatar = users.get(`${user}.avatar`)
+    var rank = users.get(`${user}.rank`)
+    var following = users.get(`${user}.following`)
+    var followers = users.get(`${user}.followers`)
+    var joindate = users.get(`${user}.joindate`)
+    var user_to_list = users.get(`${user}.following_list`)
+    var users_to_list = users.get(`${user}.followers_list`)    
+    var dark = users.get(`${user}.dark`)
     if (dark) {
       res.render('profile', { quote: quote, 
+        username: username, 
+        bio: bio, 
+        avatar: avatar, 
+        rank: rank, 
+        followers: followers, 
+        following: following, 
+        authorized: "true",
+        joindate: joindate,
+        dark: "true",
+        following_list: user_to_list,
+        follower_list: users_to_list
+
+      })
+    } else {
+      res.render('profile', { quote: quote, 
+        username: username, 
+        bio: bio, 
+        avatar: avatar, 
+        rank: rank, 
+        followers: followers, 
+        following: following, 
+        authorized: "true",
+        joindate: joindate,
+        following_list: user_to_list,
+        follower_list: users_to_list
+      })
+    }
+  }
+});
+app.get('/beta/profile', (req, res) => {
+  var quote = getQuote()
+  var user = getUser(req.cookies) 
+  if (!user) {
+    res.render('profile-beta', { quote: quote })
+  } else {
+    var username = user;
+    var bio = users.get(`${user}.bio`)
+    var avatar = users.get(`${user}.avatar`)
+    var rank = users.get(`${user}.rank`)
+    var following = users.get(`${user}.following`)
+    var followers = users.get(`${user}.followers`)
+    var joindate = users.get(`${user}.joindate`)
+    var dark = users.get(`${user}.dark`)
+    if (dark) {
+      res.render('profile-beta', { quote: quote, 
         username: username, 
         bio: bio, 
         avatar: avatar, 
@@ -447,7 +518,7 @@ app.get('/profile', (req, res) => {
         dark: "true"
       })
     } else {
-      res.render('profile', { quote: quote, 
+      res.render('profile-beta', { quote: quote, 
         username: username, 
         bio: bio, 
         avatar: avatar, 
@@ -467,12 +538,12 @@ app.get('/api/v1/get-avatar/:userId', (req, res) => {
     res.status(400)
     return
   } else {
-    var user = db.get(req.params.userId)
+    var user = users.get(req.params.userId)
     if (!user) {
       res.status(404)
     } else {
-      var avatar = db.get(`${req.params.userId}.avatar`)
-      res.sendFile("." + avatar)
+      var avatar = users.get(`${req.params.userId}.avatar`)
+      res.sendFile(__dirname + "/public/" + avatar)
       res.status(200)
     }
   }
@@ -485,7 +556,7 @@ app.get('/logout', (req, res) => {
   }
   res.clearCookie("session")
   res.redirect("/")
-  db.set(`${user}.session`, null);
+  users.set(`${user}.session`, null);
 });
 
 app.post('/users/signup', (req, res) => {
@@ -524,7 +595,7 @@ app.post('/users/signup', (req, res) => {
         req.flash('error', 'I highly doubt you think you are going to receive an account if you don\'t agree to the checkbox below.')
         res.redirect('/signup')
         return
-      } else if (!db.get(`${req.body.username}`)) {
+      } else if (!users.get(`${req.body.username}`)) {
         var username = req.body.username;
         var alphanumeric = isAlphaNumeric(username);
         if (alphanumeric === false) {
@@ -542,7 +613,7 @@ app.post('/users/signup', (req, res) => {
         var hash = bcrypt.hashSync(password, 12);
         var email = req.body.email;
         const now = new Date();
-        db.set(`${username}`, {
+        users.set(`${username}`, {
           "password" : hash, 
           "email" : email, 
           "followers": 0,
@@ -561,7 +632,7 @@ app.post('/users/signup', (req, res) => {
         })
         var session = uuidv4();
         res.cookie('session', `${username}.${session}`)
-        db.set(`${username}.session`, `${username}.${session}`);
+        users.set(`${username}.session`, `${username}.${session}`);
         res.redirect('/welcome')
       } else {
         req.flash('error', 'Username has been already taken, sorry.')
@@ -571,12 +642,19 @@ app.post('/users/signup', (req, res) => {
     } 
   }      
 })
+app.post('/profile/submit-changes', (req, res) => {
+  var username = getUser(req.cookies)
+  var bio = req.body.bio;
+  if (bio) {
+    users.set(`${username}.bio`, bio)
+  }
+  res.redirect('/profile')
+})
 app.post('/settings/submit-changes', (req, res) => {
   var new_username = req.body.username;
   var username = getUser(req.cookies)
   var current_password = req.body.currentpass;
   var new_password = req.body.newpass;
-  var bio = req.body.bio;
   var nsfw_check = req.body.nsfwCheck;
   var private_check = req.body.privateCheck;
   var darkswitch = req.body.darkswitch;  
@@ -594,38 +672,35 @@ app.post('/settings/submit-changes', (req, res) => {
     return;
   }
   if (current_password) {
-    if (bcrypt.compareSync(current_password, db.get(`${username}.password`))) {
+    if (bcrypt.compareSync(current_password, users.get(`${username}.password`))) {
       req.flash('error', 'Your current password is incorrect.')
       res.redirect('/settings')
       return    
     }
   }
-  if (bcrypt.compareSync(current_password, db.get(`${username}.password`))) {
+  if (bcrypt.compareSync(current_password, users.get(`${username}.password`))) {
     if (new_password.length < 6) {
       req.flash('error', 'Your new password must be 6 characters or more.')
       res.redirect('/settings')
       return
     } else {
-      db.set(`${username}.password`, new_password);
+      users.set(`${username}.password`, new_password);
     }
   }
   if (nsfw_check == "on") {
-    db.set(`${username}.nsfw`, true);
+    users.set(`${username}.nsfw`, true);
   } else {
-    db.set(`${username}.nsfw`, false);
+    users.set(`${username}.nsfw`, false);
   }
   if (darkswitch == "on") {
-    db.set(`${username}.dark`, true);
+    users.set(`${username}.dark`, true);
   } else {
-    db.set(`${username}.dark`, false);
+    users.set(`${username}.dark`, false);
   }  
-  if (bio) {
-    db.set(`${username}.bio`, bio)
-  }
   if (private_check == "on") {
-    db.set(`${username}.private`, true);
+    users.set(`${username}.private`, true);
   } else {
-    db.set(`${username}.private`, false);
+    users.set(`${username}.private`, false);
   }  
   if (new_username) {
     var alphanumeric = isAlphaNumeric(new_username) 
@@ -657,14 +732,14 @@ app.post('/users/login', (req, res) => {
     res.redirect('/login')
     return
   }
-  var user = db.has(`${username}`);
+  var user = users.has(`${username}`);
   if (!user) {
     req.flash('error', 'Username invalid.')
     res.redirect('/login')
     return
   }
-  let dbPass = db.get(`${username}.password`);
-  let comparison = bcrypt.compareSync(password, dbPass)
+  let usersPass = users.get(`${username}.password`);
+  let comparison = bcrypt.compareSync(password, usersPass)
   if (comparison === false) {
     req.flash('error', 'Password invalid.')
     res.redirect('/login')
@@ -672,7 +747,7 @@ app.post('/users/login', (req, res) => {
   }
   var session = uuidv4();
   res.cookie('session', `${username}.${session}`)
-  db.set(`${username}.session`, `${username}.${session}`);
+  users.set(`${username}.session`, `${username}.${session}`);
   res.redirect('/')
 }); 
 

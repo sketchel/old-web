@@ -9,7 +9,7 @@ html
         include includes/navbar-1.pug
 
     if !authorized
-        section.hero.is-danger.is-bold
+        section.hero.is-large.is-danger.is-bold
             div.container.is-fluid
                 div.hero-body
                     h1.title You need to be logged in to use this page. <i class="em em-cog" aria-role="presentation" aria-label=""></i> 
@@ -17,10 +17,10 @@ html
                     div.field
                         p.control
                             a(href="/signup") 
-                                button.button.is-primary.is-rounded Register for Sketchel here.
+                                button.button.is-danger.is-rounded Register for Sketchel here.
                                 
                             a(href="/login") 
-                                button.button.is-primary.is-rounded Or, you can login here.
+                                button.button.is-danger.is-rounded Or, you can login here.
     if authorized
         section.hero.is-primary.is-bold
             div.container.is-fluid
@@ -31,48 +31,44 @@ html
                         p.control
                             a(href="/profile/" + username) 
                                 button.button.is-primary.is-rounded There's an escape hatch here.
-    br
-    div.container.is-fluid
-            div.container.is-fluid
-                form(method="POST", action="/settings/submit-changes")
-                    section.has-text-centered
+        br
+        div.container.is-fluid
+                div.container.is-fluid
+                    form(method="POST", action="/settings/submit-changes")
+                        section.has-text-centered
+                            br
+                            if error_messages != ""
+                                div.container.is-fluid
+                                    div.notification.is-danger
+                                        p <strong>Error:</strong> #{error_messages}
+                            if success_messages != ""
+                                div.container.is-fluid
+                                    div.notification.is-success
+                                        p <strong>Success:</strong> #{success_messages}                                    
                         br
-                        if error_messages != ""
-                            div.container.is-fluid
-                                div.notification.is-danger
-                                    p <strong>Error:</strong> #{error_messages}
-                        if success_messages != ""
-                            div.container.is-fluid
-                                div.notification.is-success
-                                    p <strong>Success:</strong> #{success_messages}                                    
-                    br
-                    p You can change your username whenever.
-                    div.field
-                        p.control
-                            input(class="input is-rounded", for="inputUsername", type="text", name="username", placeholder="new username")
-                    p Bio
-                    div.field
-                        p.control
-                            textarea.textarea(name="bio", placeholder="Say something about yourself, like, you like doing backflips, or something.")
-                    p Change password
-                    div.field
-                        p.control
-                            input(class="input is-rounded", for="currentPassword", type="text", name="currentpass", placeholder="current password")
-                    div.field
-                        p.control
-                            input(class="input is-rounded", for="newPass", type="text", name="newpass", placeholder="new password")
-                    br
-                    div.field 
-                        input.is-checkradio.is-danger.has-background-color(type="checkbox" name="nsfwCheck", id="nsfwCheck")   
-                        label(for="nsfwCheck") Do you post NSFW (18+) content?
-                    div.field 
-                        input.is-checkradio.is-warning.has-background-color(type="checkbox" name="privateCheck", id="privateCheck")   
-                        label(for="privateCheck") Private account?          
-                    div.field
-                        input.is-checkradio.is-link.has-background-color(type="checkbox" name="darkswitch", id="darkswitch")   
-                        label(for="darkswitch") Dark Mode?      
-                    div(align="center")
-                        input(class="button is-success is-medium is-rounded", type="submit", value="Save Changes") 
+                        p You can change your username whenever.
+                        div.field
+                            p.control
+                                input(class="input is-rounded", for="inputUsername", type="text", name="username", placeholder="new username")
+                        p Change password
+                        div.field
+                            p.control
+                                input(class="input is-rounded", for="currentPassword", type="text", name="currentpass", placeholder="current password")
+                        div.field
+                            p.control
+                                input(class="input is-rounded", for="newPass", type="text", name="newpass", placeholder="new password")
+                        br
+                        div.field 
+                            input.is-checkradio.is-danger.has-background-color(type="checkbox" name="nsfwCheck", id="nsfwCheck")   
+                            label(for="nsfwCheck") Do you post NSFW (18+) content?
+                        div.field 
+                            input.is-checkradio.is-warning.has-background-color(type="checkbox" name="privateCheck", id="privateCheck")   
+                            label(for="privateCheck") Private account?          
+                        div.field
+                            input.is-checkradio.is-link.has-background-color(type="checkbox" name="darkswitch", id="darkswitch")   
+                            label(for="darkswitch") Dark Mode?      
+                        div(align="center")
+                            input(class="button is-success is-medium is-rounded", type="submit", value="Save Changes") 
     br            
 
 

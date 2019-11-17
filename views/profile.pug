@@ -1,71 +1,160 @@
-
 doctype html
 html 
   include includes/head.pug
-
   body
     if authorized
-        include includes/navbar-2.pug
+        include includes/navbar-2 
     if !authorized
-        include includes/navbar-1.pug
+        include includes/navbar-1    
 
-    if authorized
-        div.container.is-fluid
-            div.columns
-                div.column
-                    div.box
-                        content.has-text-centered
-                            article(class="notification has-background-white media")
-                                figure(class="media-left")
-                                    figure(class="image is-128x128")
-                                        img(class="image is-128x128", src=avatar)  
-                                div(class="media-content")
-                                    span.tag.is-primary #{rank}
-                                    h1.title.is-size-4 #{username}
-                                    p.subtitle.is-size-5 #{bio}
-                                    p.subtitle-is-size-5 Joined at <strong>#{joindate}</strong>
-
-                        div.container.is-fluid
-                            div.buttons
-                                a.button.is-primary(disabled) <strong>Follow</strong>&nbsp; #{followers}
-                                a.button.is-primary(href="/following/" + username) <strong>Following</strong>&nbsp; #{following}
-                                a.button.is-link(href="/profile/option/editbio")
-                                    span.icon.is-small
-                                        i.fas.fa-edit 
-        br   
-        div.container.is-fluid
-            div.box
-                h1.title This empty box is actually supposed to represent the animations of the user.
-                h2.subtitle But I can't do that at the moment.
-        br
     if !authorized 
-        section.hero.is-danger.is-bold
+        section.hero.is-medium.is-danger.is-bold
             div.container.is-fluid
                 div.hero-body
                     h1.title You need to be logged in to use this page. <i class="em em-bust_in_silhouette" aria-role="presentation" aria-label=""></i> 
-                    h2.subtitle This is the profile page, you need an account to see this after all.
-                    div.columns.is-multiline
-                        div.column.is-one-third
-                            div.box
-                                article(class="notification has-background-white media")
-                                    figure(class="media-left")
-                                        a(href="/signup")
-                                            span(class="icon")
-                                                i(class="animated pulse fas fa-user-plus fa-2x")
-                                    div(class="media-content")
-                                        a.button.is-white(href="/signup") Let's get started. 
-                        div.column.is-one-third
-                            div.box
-                                article(class="notification has-background-white media")
-                                    figure(class="media-left")
-                                        a(href="/login")
-                                            span(class="icon")
-                                                i(class="animated pulse fas fa-sign-in-alt fa-2x")
-                                    div(class="media-content")
-                                        a.button.is-white(href="/login") Or, login here.  
-                                        
+                    h2.subtitle You're trying to visit a page you need to be logged into to use.
+                    div.field
+                        p.control
+                            a(href="/signup") 
+                                button.button.is-danger.is-rounded Register for Sketchel here.
+                                
+                            a(href="/login") 
+                                button.button.is-danger.is-rounded Or, you can login here.
+    if authorized
+        script(src="/js/modal.js", type="text/javascript", crossorigin="anonymous")
+        script(src="/js/autolink.js", type="text/javascript", crossorigin="anonymous")
+        div.modal.is-clipped(id="profileModal")
+            div.modal-background
+            div.modal-card
+                header.modal-card-head
+                    p.modal-card-title Edit profile
+                    button.button.is-small(aria-label="close", id="exitModal", data-target="profileModal")
+                        span.icon.is-small
+                            i.fas.fa-times
+                section.modal-card-body
+                    form(method="POST", action="/profile/submit-changes")
+                        p Bio
+                            div.field
+                                p.control
+                                    textarea.textarea(name="bio", placeholder="Say something about yourself, like, you like doing backflips, or something.")
+                        div.buttons
+                            input(class="button is-success is-rounded", type="submit", value="Save Changes")   
+
+        div.modal.is-clipped(id="followingModal")
+            div.modal-background
+            div.modal-card
+                header.modal-card-head
+                    p.modal-card-title #{username} is Following
+                    button.button.is-small(aria-label="close", id="exitFollowingModal", data-target="followingModal")
+                        span.icon.is-small
+                            i.fas.fa-times
+                section.modal-card-body
+                    each val in following_list
+                        div.box
+                            .media
+                                .media-left
+                                    figure.image.is-64x64
+                                        img(src="https://sketchel.art/api/v1/get-avatar/" + val)
+                                .media-content
+                                    a(href="/profile/" + val)
+                                        if rank = "owner"
+                                            p.title.is-4 #{val}   
+                                        else 
+                                            p.title.is-4 #{val} 
+        div.modal.is-clipped(id="followerModal")
+            div.modal-background
+            div.modal-card
+                header.modal-card-head
+                    p.modal-card-title #{username}'s Followers
+                    button.button.is-small(aria-label="close", id="exitFollowerModal", data-target="followerModal")
+                        span.icon.is-small
+                            i.fas.fa-times
+                section.modal-card-body
+                    each val in follower_list
+                        div.box
+                            .media
+                                .media-left
+                                    figure.image.is-64x64
+                                        img(src="https://sketchel.art/api/v1/get-avatar/" + val)
+                                .media-content
+                                    a(href="/profile/" + val)
+                                        if rank = "owner"
+                                            p.title.is-4 #{val}   
+                                        else 
+                                            p.title.is-4 #{val}                                             
+
+                    
+
+        div.container.is-fluid
+            div.columns.is-multiline
+                .column.is-one-quarter
+                    div.card
+                        div.card-image
+                            figure.image.is-4by3
+                                img(src="https://bulma.io/images/placeholders/1280x960.png")
+                        .card-content  
+                            .media
+                                .media-left
+                                    figure.image.is-64x64
+                                        img(src=avatar)
+                                .media-content
+                                    if rank = "owner"
+                                        p.title.is-4 #{username}   
+                                    else 
+                                        p.title.is-4 #{username}
+                                    p.subtitle.is-6 Joined at <strong>#{joindate}</strong>
+                            div.content.has-text-centered
+                                p(id="bio") #{bio}
+                            div.container.is-fluid
+                                hr
+                            nav.level
+                                .level-item.has-text-centered
+                                    a.button.is-white(data-target="followerModal", id="openFollowerModal")
+                                        div
+                                            p.heading Followers
+                                            p.title.is-5 #{followers} 
+                                .level-item.has-text-centered
+                                    a.button.is-white(data-target="followingModal", id="openFollowingModal")
+                                        div
+                                            p.heading Following
+                                            p.title.is-5 #{following}  
+                    br
+                    a.button.is-primary.is-fullwidth(data-target="profileModal", id="showModal") Edit profile                                                                     
+                div.column
+                    div.tabs.is-centered.is-boxed
+                        ul
+                            li.is-active
+                                a 
+                                    span.icon.is-small 
+                                        i.fas.fa-thumbtack(aria-hidden="true")
+                                    span Pinned
+                            li
+                                a 
+                                    span.icon.is-small 
+                                        i.fas.fa-clock(aria-hidden="true")
+                                    span Recent                          
+                            li
+                                a 
+                                    span.icon.is-small 
+                                        i.fas.fa-heart(aria-hidden="true")
+                                    span Liked
+                            li
+                                a 
+                                    span.icon.is-small 
+                                        i.fas.fa-user-ninja(aria-hidden="true")
+                                    span NSFW
+                            li
+                                a 
+                                    span.icon.is-small 
+                                        i.fas.fa-star(aria-hidden="true")
+                                    span Featured   
+                                                     
+                                    
+
+    br
     footer.footer
-      div(class="content")
-          p <strong>Sketchel</strong> © <strong>2019</strong>, made with <a href="https://bulma.io">Bulma</a>, <a href="https://expressjs.com/">Express</a> and <a href="https://pugjs.com/">Pug</a> & more libraries, and also <span class="icon has-text-danger"><i class="fas fa-heart"></i></span>.
-          p <a href="/rules">Rules</a> | <a href="/terms">Terms of Service</a> | <a>Privacy Policy</a>                    
-          p <strong>Quote:</strong> #{quote}                
+        p <strong>Sketchel</strong> © <strong>2019</strong>, made with <a href="https://bulma.io">Bulma</a>, <a href="https://expressjs.com/">Express</a> and <a href="https://pugjs.com/">Pug</a> & more libraries, and also <span class="icon has-text-danger"><i class="fas fa-heart"></i></span>.
+        p <a href="/rules">Rules</a> | <a href="/terms">Terms of Service</a> | <a href="/credits">Credits</a>    
+        p <strong>Quote:</strong> #{quote}                
+
+                

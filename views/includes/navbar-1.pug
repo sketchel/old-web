@@ -1,8 +1,12 @@
-
+script(src="/js/navbar.js", crossorigin="anonymous")
 nav.navbar.is-spaced(role="navigation", aria-label="main navigation")
     div.navbar-brand
         figure(class="image is-48x48")
             img(class="image is-48x48", src="/assets/sketchel-small.png")  
+        a.navbar-burger(role="button", data-target="navbar", aria-label="menu", aria-expanded="false")
+            span(aria-hidden="true")
+            span(aria-hidden="true")
+            span(aria-hidden="true")    
     div.navbar-menu.is-active(id="navbar")
         div.navbar-start
             a.navbar-item(href="/") <i class="fas fa-home"></i>&nbsp;Home
