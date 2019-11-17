@@ -11,6 +11,12 @@ nav.navbar.is-spaced(role="navigation", aria-label="main navigation")
             
         div.navbar-end
             
+            a.navbar-item
+                div.field
+                    p.control.has-icons-left
+                        input.input.is-rounded(type="text", placeholder="Search")   
+                        span.icon.is-small.is-left
+                            i.fas.fa-search         
             a.navbar-item(href="/notifications") <i class="fas fa-bell"></i>&nbsp;Notifications
             a.navbar-item(href="/create") <i class="fas fa-paint-brush"></i>&nbsp;Create
             div.navbar-item.has-dropdown.is-hoverable

@@ -20,7 +20,7 @@ html
                                     img(class="image is-128x128", src=avatar)  
                             div(class="media-content")
                                 span.tag.is-primary #{rank}
-                                h1.title.is-size-4 #{username}
+                                h1.title.is-size-4 #{user}
                                 p.subtitle.is-size-5 #{bio}
                                 p.subtitle-is-size-5 Joined at <strong>#{joindate}</strong>
                     div.container.is-fluid
@@ -29,10 +29,10 @@ html
                                 a.button.is-primary(disabled) <strong>Follow</strong>&nbsp;#{followers}
                             if authorized
                                 if is_followed
-                                    a.button.is-primary(href="/unfollow/" + username) <strong>Unfollow</strong>&nbsp;#{followers}
+                                    a.button.is-primary(href="/unfollow/" + user) <strong>Unfollow</strong>&nbsp;#{followers}
                                 if !is_followed
-                                    a.button.is-primary(href="/follow/" + username) <strong>Follow</strong>&nbsp;#{followers}
-                            a.button.is-primary(href="/following/" + username) <strong>Following</strong>&nbsp;#{following}
+                                    a.button.is-primary(href="/follow/" + user) <strong>Follow</strong>&nbsp;#{followers}
+                            a.button.is-primary(href="/following/" + user) <strong>Following</strong>&nbsp;#{following}
     br   
     div.container.is-fluid
         div.box

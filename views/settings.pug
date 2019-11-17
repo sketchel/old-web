@@ -14,80 +14,66 @@ html
                 div.hero-body
                     h1.title You need to be logged in to use this page. <i class="em em-cog" aria-role="presentation" aria-label=""></i> 
                     h2.subtitle This is the settings page, you need an account to use this after all.
-                    div.columns.is-multiline
-                        div.column.is-one-third
-                            div.box
-                                article(class="notification has-background-white media")
-                                    figure(class="media-left")
-                                        a(href="/signup")
-                                            span(class="icon")
-                                                i(class="animated pulse fas fa-user-plus fa-2x")
-                                    div(class="media-content")
-                                        a.button.is-white(href="/signup") Let's get started. 
-                        div.column.is-one-third
-                            div.box
-                                article(class="notification has-background-white media")
-                                    figure(class="media-left")
-                                        a(href="/login")
-                                            span(class="icon")
-                                                i(class="animated pulse fas fa-sign-in-alt fa-2x")
-                                    div(class="media-content")
-                                        a.button.is-white(href="/login") Or, login here.  
+                    div.field
+                        p.control
+                            a(href="/signup") 
+                                button.button.is-primary.is-rounded Register for Sketchel here.
+                                
+                            a(href="/login") 
+                                button.button.is-primary.is-rounded Or, you can login here.
     if authorized
         section.hero.is-primary.is-bold
             div.container.is-fluid
                 div.hero-body
-                    h1.title <i class="em em-gear" aria-role="presentation" aria-label=""></i>  #{username}'s Settings
+                    h1.title <i class="em em-gear" aria-role="presentation" aria-label=""></i> #{username}'s Settings
                     h2.subtitle P.S. That's you!
-                    div.column.is-one-third
-                        div.box
-                            article(class="notification has-background-white media")
-                                figure(class="media-left")
-                                    a(href="/")
-                                        span(class="icon")
-                                            i(class="animated pulse fas fa-home fa-2x")
-                                div(class="media-content")
-                                    a.button.is-white(href="/") There's an escape hatch here.
-        br
-        div.container.is-fluid
-            div.box
-                div.container.is-fluid
-                    form(method="POST", action="/settings/submit-changes")
-                        section.has-text-centered
-                            h1.title Settings
-                            h2.subtitle You can change stuff about your account here.
-                            br
-                            if error_messages != ""
-                                div.container.is-fluid
-                                    div.notification.is-danger
-                                        p <strong>Error:</strong> #{error_messages}
-                            if success_messages != ""
-                                div.container.is-fluid
-                                    div.notification.is-success
-                                        p <strong>Success:</strong> #{success_messages}                                    
+                    div.field
+                        p.control
+                            a(href="/profile/" + username) 
+                                button.button.is-primary.is-rounded There's an escape hatch here.
+    br
+    div.container.is-fluid
+            div.container.is-fluid
+                form(method="POST", action="/settings/submit-changes")
+                    section.has-text-centered
                         br
-                        p You can change your username whenever.
-                        div.field
-                            p.control
-                                input(class="input is-rounded", for="inputUsername", type="text", name="username", placeholder="new username")
-                        br
-                        p Change password
-                        div.field
-                            p.control
-                                input(class="input is-rounded", for="currentPassword", type="text", name="currentpass", placeholder="current password")
-                        div.field
-                            p.control
-                                input(class="input is-rounded", for="newPass", type="text", name="newpass", placeholder="new password")
-                        br
-                        div.field 
-                            input.is-checkradio.is-danger.has-background-color(type="checkbox" name="nsfwCheck", id="nsfwCheck")   
-                            label(for="nsfwCheck") Do you post NSFW (18+) content?
-                        div.field 
-                            input.is-checkradio.is-warning.has-background-color(type="checkbox" name="privateCheck", id="privateCheck")   
-                            label(for="privateCheck") Private account?                          
-                        div(align="center")
-                            input(class="button is-success is-medium is-rounded", type="submit", value="Save Changes") 
-        br            
+                        if error_messages != ""
+                            div.container.is-fluid
+                                div.notification.is-danger
+                                    p <strong>Error:</strong> #{error_messages}
+                        if success_messages != ""
+                            div.container.is-fluid
+                                div.notification.is-success
+                                    p <strong>Success:</strong> #{success_messages}                                    
+                    br
+                    p You can change your username whenever.
+                    div.field
+                        p.control
+                            input(class="input is-rounded", for="inputUsername", type="text", name="username", placeholder="new username")
+                    p Bio
+                    div.field
+                        p.control
+                            textarea.textarea(name="bio", placeholder="Say something about yourself, like, you like doing backflips, or something.")
+                    p Change password
+                    div.field
+                        p.control
+                            input(class="input is-rounded", for="currentPassword", type="text", name="currentpass", placeholder="current password")
+                    div.field
+                        p.control
+                            input(class="input is-rounded", for="newPass", type="text", name="newpass", placeholder="new password")
+                    br
+                    div.field 
+                        input.is-checkradio.is-danger.has-background-color(type="checkbox" name="nsfwCheck", id="nsfwCheck")   
+                        label(for="nsfwCheck") Do you post NSFW (18+) content?
+                    div.field 
+                        input.is-checkradio.is-warning.has-background-color(type="checkbox" name="privateCheck", id="privateCheck")   
+                        label(for="privateCheck") Private account?          
+                    div.field
+                        input.is-checkradio.is-link.has-background-color(type="checkbox" name="darkswitch", id="darkswitch")   
+                        label(for="darkswitch") Dark Mode?      
+                    div(align="center")
+                        input(class="button is-success is-medium is-rounded", type="submit", value="Save Changes") 
+    br            
 
 
     footer.footer

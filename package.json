@@ -6,7 +6,9 @@
   "scripts": {
     "start": "nodemon index.js",
     "css-build": "node-sass --omit-source-map-url public/scss/style.scss public/css/style.css",
-    "css-watch": "npm run css-build -- --watch"
+    "css-watch": "npm run css-build -- --watch",
+    "dark-build": "node-sass --omit-source-map-url public/scss/dark.scss public/css/dark.css",
+    "dark-watch": "npm run dark-build -- --watch"    
   },
   "repository": {
     "type": "git",

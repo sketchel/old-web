@@ -12,16 +12,11 @@ html
         div.container.is-fluid
             h1.title Welcome to Sketchel! <i class="em em-tada" aria-role="presentation" aria-label="PARTY POPPER"></i>
             h2.subtitle Here's what we got to offer!
-            div.columns.is-multiline
-                div.column.is-one-third
-                    div.box
-                        article(class="notification has-background-white media")
-                            figure(class="media-left")
-                                a(href="/")
-                                    span(class="icon")
-                                        i(class="animated pulse fas fa-home fa-2x")
-                            div(class="media-content")
-                                a.button.is-white(href="/") Wanna go home?
+                    div.field
+                        p.control
+                            a(href="/") 
+                                button.button.is-primary.is-rounded Wanna go home?
+
     br                        
     div.container.is-fluid
         div.box  
@@ -32,7 +27,7 @@ html
                             article(class="notification has-background-white media")
                                 figure(class="media-left")
                                     span(class="icon has-text-danger")
-                                        i(class="animated infinite pulse fas fa-gavel fa-2x")
+                                        i(class="fas fa-gavel fa-2x")
                                 div(class="media-content")
                                     h1.title.is-size-5 Moderation
                                     p.subtitle.is-size-5 Keep bad users out of your posts using easy to use advanced moderation tools.
@@ -40,7 +35,7 @@ html
                             article(class="notification has-background-white media")
                                 figure(class="media-left")
                                     span(class="icon has-text-info")
-                                        i(class="animated infinite pulse has-text-info fas fa-cog fa-2x")
+                                        i(class="has-text-info fas fa-cog fa-2x")
                                 div(class="media-content")
                                     h1.title.is-size-5 Advanced Development
                                     p.subtitle.is-size-5 Sketchel uses modern libraries/resources such as <a href="https://expressjs.org">Express</a> and <a href="https://pugjs.org">Pug</a> to make sure the website looks sleek and modern.
@@ -48,7 +43,7 @@ html
                             article(class="notification has-background-white media")
                                 figure(class="media-left")
                                     span(class="icon has-text-primary")
-                                        i(class="animated infinite pulse has-text-primary fab fa-discord fa-2x")
+                                        i(class="has-text-primary fab fa-discord fa-2x")
                                 div(class="media-content")
                                     h1.title.is-size-5 Discord Support
                                     p.subtitle.is-size-5 Have you heard? Sketchel will have discord support, this will include rank-sync <a href="https://discord.gg/sG7KSbW">in the server</a> and having discord in your profile card, many more features will be disclosed later.
@@ -56,7 +51,7 @@ html
                             article(class="notification has-background-white media")
                                 figure(class="media-left")
                                     span(class="icon has-text-warning")
-                                        i(class="animated infinite pulse has-text-warning fas fa-paint-brush fa-2x")
+                                        i(class="has-text-warning fas fa-paint-brush fa-2x")
                                 div(class="media-content")
                                     h1.title.is-size-5 Advanced Canvas
                                     p.subtitle.is-size-5 Sketchel will have a modern canvas using the best resources that will save for you to continue your work later, being the most useful to you.
@@ -64,7 +59,7 @@ html
                             article(class="notification has-background-white media")
                                 figure(class="media-left")
                                     span(class="icon has-text-success")
-                                        i(class="animated infinite pulse has-text-success fas fa-gavel fa-2x")
+                                        i(class="has-text-success fas fa-gavel fa-2x")
                                 div(class="media-content")
                                     h1.title.is-size-5 Moderation v2
                                     p.subtitle.is-size-5 If the moderation fails, you may report your issue to the moderation team.
@@ -73,7 +68,6 @@ html
 
     br
     footer.footer
-      div(class="content")
-          p <strong>Sketchel</strong> © <strong>2019</strong>, made with <a href="https://bulma.io">Bulma</a>, <a href="https://expressjs.com/">Express</a> and <a href="https://pugjs.com/">Pug</a> & more libraries, and also <span class="icon has-text-danger"><i class="fas fa-heart"></i></span>.
-          p <a href="/rules">Rules</a> | <a href="/terms">Terms of Service</a> | <a>Privacy Policy</a>                    
-          p <strong>Quote:</strong> #{quote}    
+        p <strong>Sketchel</strong> © <strong>2019</strong>, made with <a href="https://bulma.io">Bulma</a>, <a href="https://expressjs.com/">Express</a> and <a href="https://pugjs.com/">Pug</a> & more libraries, and also <span class="icon has-text-danger"><i class="fas fa-heart"></i></span>.
+        p <a href="/rules">Rules</a> | <a href="/terms">Terms of Service</a> | <a>Privacy Policy</a>                    
+        p <strong>Quote:</strong> #{quote}    

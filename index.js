@@ -1,7 +1,6 @@
 const express = require('express');
 const db = require('quick.db');
 const flash = require('connect-flash');
-const path = require('path');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const passport = require('passport');
@@ -9,10 +8,30 @@ const session = require('express-session');
 const chalk = require('chalk');
 const uuidv4 = require('uuid/v4');
 const date = require('date-and-time');
-
+const bcrypt = require('bcrypt');
+const https = require('https');
+const fs = require('fs');
 const app = express();
-const port = 80;
 
+var discord = {
+  "oauth": {
+    "clientId": "645366454618816522",
+    "clientSecret": "d2Hfn0cHpPPwoRKtpnuyM8amIxluwxF9"
+  },
+  "bot": {
+    "token": "NjQ1MzY2NDU0NjE4ODE2NTIy.XdBkSQ.xl9NqXwKhTtToT8uFd_G2zHTdSg"
+  },
+  "scopes": [
+    "identify",
+    "email"
+  ]
+};
+discord.scope = () => {
+  return discord.scopes.join("%20");
+}
+
+// Anti-Deus Ex Machina
+// db.set('Minota.rank', 'owner')
 
 // Views
 app.set('view engine', 'pug')
@@ -51,14 +70,12 @@ function getQuote() {
 function getUser(cookies) {
   var session = cookies['session'];
   if (!session) {
-    console.log("user not logged in")
     return false
   }
   var username = session.split(".")[0]
   var session_db = db.get(`${username}.session`)
   if (session === session_db) {
     return username
-    console.log("user logged in.")
   } else {
     return false
   }
@@ -93,74 +110,175 @@ function isAlphaNumeric(str) {
 };
 
 // Load pages
+app.get('/beta/canvas', (req, res) => {
+  res.render('canvas')
+})
+app.get('/following/:userId', (req, res) => {
+  var quote = getQuote()
+  var user = getUser(req.cookies) 
+  
+  if (!req.params.userId) {
+    res.redirect('404')
+    return
+  }
+  var follow_list_user = db.get(`${req.params.userId}`)
+  if (!follow_list_user) {
+    res.redirect('404')
+    return
+  }
+  var user_to_list = db.get(`${req.params.userId}.following_list`)
+  var dark = db.get(`${user}.dark`)
+  if (dark) {
+    res.render('followed-users', { dark: "true", quote: quote, user: req.params.userId, username: user, following_list: user_to_list })
+  } else {
+    res.render('followed-users', { quote: quote, user: req.params.userId, username: user, following_list: user_to_list })
+  }
+  
+})
+
 app.get('/', (req, res) => {
   var quote = getQuote()
   var user = getUser(req.cookies) 
+  var dark = db.get(`${user}.dark`)
   if (!user) {
-    res.render('home', { quote: quote })
+    if (dark) {
+      res.render('home', { quote: quote, dark: "true" })
+    } else {
+      res.render('home', { quote: quote })
+    }
   } else {
-    var username = user;
-    res.render('home', { quote: quote, username: username, authorized: "true" })
+    if (dark) {
+      var username = user;
+      res.render('home', { quote: quote, username: username, authorized: "true", dark: "true" })
+    } else {
+      var username = user;
+      res.render('home', { quote: quote, username: username, authorized: "true" })      
+    }
   }
 });
+
 app.get('/welcome', (req, res) => {
   var quote = getQuote()
   var user = getUser(req.cookies) 
+  var dark = db.get(`${user}.dark`)
   if (!user) {
-    res.render('welcome', { quote: quote })
+    if (dark) {
+      res.render('welcome', { quote: quote, dark: "true" })
+    } else {
+      res.render('welcome', { quote: quote })
+    }
   } else {
-    var username = user;
-    res.render('welcome', { quote: quote, username: username, authorized: "true" })
+    if (dark) {
+      var username = user;
+      res.render('welcome', { quote: quote, username: username, authorized: "true", dark: "true" })
+    } else {
+      var username = user;
+      res.render('welcome', { quote: quote, username: username, authorized: "true" })      
+    }
   }
 });
 app.get('/rules', (req, res) => {
   var quote = getQuote()
   var user = getUser(req.cookies) 
+  var dark = db.get(`${user}.dark`)
   if (!user) {
-    res.render('rules', { quote: quote })
+    if (dark) {
+      res.render('rules', { quote: quote, dark: "true" })
+    } else {
+      res.render('rules', { quote: quote })
+    }
   } else {
-    var username = user;
-    res.render('rules', { quote: quote, username: username, authorized: "true" })
+    if (dark) {
+      var username = user;
+      res.render('rules', { quote: quote, username: username, authorized: "true", dark: "true" })
+    } else {
+      var username = user;
+      res.render('rules', { quote: quote, username: username, authorized: "true" })      
+    }
   }
 });
 app.get('/terms', (req, res) => {
   var quote = getQuote()
   var user = getUser(req.cookies) 
+  var dark = db.get(`${user}.dark`)
   if (!user) {
-    res.render('terms', { quote: quote })
+    if (dark) {
+      res.render('terms', { quote: quote, dark: "true" })
+    } else {
+      res.render('terms', { quote: quote })
+    }
   } else {
-    var username = user;
-    res.render('terms', { quote: quote, username: username, authorized: "true" })
+    if (dark) {
+      var username = user;
+      res.render('terms', { quote: quote, username: username, authorized: "true", dark: "true" })
+    } else {
+      var username = user;
+      res.render('terms', { quote: quote, username: username, authorized: "true" })      
+    }
   }
 });
 app.get('/login', (req, res) => {
   var quote = getQuote()
   var user = getUser(req.cookies) 
   if (!user) {
-    res.render('login', { quote: quote })
+    var dark = db.get(`${user}.dark`)
+    if (dark) {
+      res.render('login', { quote: quote, dark: "true" })
+    } else {
+      res.render('login', { quote: quote })
+    }
   } else {
     var username = user;
-    res.render('login', { quote: quote, username: username, authorized: "true" })
+    var dark = db.get(`${user}.dark`)
+    if (dark) {
+      res.render('login', { quote: quote, username: username, authorized: "true", dark: "true" })
+    } else {
+      res.render('login', { quote: quote, username: username, authorized: "true" })
+    }
+    
   }
 });
 app.get('/signup', (req, res) => {
   var quote = getQuote()
   var user = getUser(req.cookies) 
   if (!user) {
-    res.render('signup', { quote: quote })
+    var dark = db.get(`${user}.dark`)
+    if (dark) {
+      res.render('signup', { quote: quote, dark: "true" })
+    } else {
+      res.render('signup', { quote: quote })
+    }
+    
   } else {
     var username = user;
-    res.render('signup', { quote: quote, username: username, authorized: "true" })
+    var dark = db.get(`${user}.dark`)
+    if (dark) {
+      res.render('signup', { quote: quote, username: username, authorized: "true", dark: "true" })
+    } else {
+      res.render('signup', { quote: quote, username: username, authorized: "true" })
+    }
   }
 });
 app.get('/settings', (req, res) => {
   var quote = getQuote()
   var user = getUser(req.cookies) 
   if (!user) {
-    res.render('settings', { quote: quote })
+    var dark = db.get(`${user}.dark`)
+    if (dark) {
+      res.render('settings', { quote: quote, dark: "true" })
+    } else {
+      res.render('settings', { quote: quote })
+    }
+    
   } else {
     var username = user;
-    res.render('settings', { quote: quote, username: username, authorized: "true" })
+    var dark = db.get(`${user}.dark`)
+    if (dark) {
+      res.render('settings', { quote: quote, username: username, authorized: "true", dark: "true" })
+    } else {
+      res.render('settings', { quote: quote, username: username, authorized: "true" })
+    }
+    
   }
 });
 app.get('/profile/:userId', (req, res) => {
@@ -171,14 +289,19 @@ app.get('/profile/:userId', (req, res) => {
   }
   var profile_user = db.get(req.params.userId);
   if (!profile_user) {
-    res.render('404', { quote: quote })
+    var dark = db.get(`${user}.dark`)
+    if (dark) {
+      res.render('404', { quote: quote, dark: "true" })
+    } else {
+      res.render('404', { quote: quote })
+    }
+
   }
   if (user) {
     if (req.params.userId === user) {
       res.redirect('/profile')
     }
   }
-  var username = req.params.userId;
   var bio = db.get(`${req.params.userId}.bio`)
   var avatar = db.get(`${req.params.userId}.avatar`)
   var rank = db.get(`${req.params.userId}.rank`)
@@ -186,20 +309,38 @@ app.get('/profile/:userId', (req, res) => {
   var followers = db.get(`${req.params.userId}.followers`)
   var joindate = db.get(`${req.params.userId}.joindate`)
   var follow_status = db.get(`${req.params.userId}.followers_list`).includes(user);
+  var dark = db.get(`${user}.dark`)
   if (!follow_status) {
-    res.render('user-profile', { quote: quote, 
-      username: username, 
-      bio: bio, 
-      avatar: avatar, 
-      rank: rank, 
-      followers: followers, 
-      following: following, 
-      authorized: "true",
-      joindate: joindate
-    })
+    if (dark) {
+      res.render('user-profile', { quote: quote, 
+        user: req.params.userId, 
+        username: user, 
+        bio: bio, 
+        avatar: avatar, 
+        rank: rank, 
+        followers: followers, 
+        following: following, 
+        authorized: "true",
+        joindate: joindate,
+        dark: "true"
+      })
+    } else {
+      res.render('user-profile', { quote: quote, 
+        user: req.params.userId, 
+        username: user, 
+        bio: bio, 
+        avatar: avatar, 
+        rank: rank, 
+        followers: followers, 
+        following: following, 
+        authorized: "true",
+        joindate: joindate
+      })
+    }
   } else {
-    res.render('user-profile', { quote: quote, 
-      username: username, 
+    res.render('user-profile', { quote: quote,
+      user: req.params.userId, 
+      username: user, 
       bio: bio, 
       avatar: avatar, 
       rank: rank, 
@@ -215,26 +356,30 @@ app.get('/follow/:userId', (req, res) => {
   var quote = getQuote()
   if (!req.params.userId) {
     res.render('404', { quote: quote })
+    return
   }
   var user = getUser(req.cookies) 
   if (!user) {
     res.render('not-logged-in', { quote: quote })
+    return
   }
   var to_follow = db.get(req.params.userId);
   if (!to_follow) {
     res.render("404", { quote: quote })
+    return
   }
   if (req.params.userId === user) {
     res.redirect("/profile")
+    return
   } else {
     if (db.get(`${req.params.userId}.followers_list`).includes(user)) {
       res.redirect(`/profile/${req.params.userId}`)
       return
     }
-    db.push(`${req.params.userId}.followers_list`, `${user}`)
+    db.push(`${req.params.userId}.followers_list`, user)
     db.add(`${req.params.userId}.followers`, 1)
     db.add(`${user}.following`, 1)
-    db.push(`${user}.following_list`, user)
+    db.push(`${user}.following_list`, req.params.userId)
     res.redirect(`/profile/${req.params.userId}`)
   }
 })
@@ -242,17 +387,21 @@ app.get('/unfollow/:userId', (req, res) => {
   var quote = getQuote()
   if (!req.params.userId) {
     res.render('404', { quote: quote })
+    return
   }
   var user = getUser(req.cookies) 
   if (!user) {
     res.render('not-logged-in', { quote: quote })
+    return
   }
   var to_follow = db.get(req.params.userId);
   if (!to_follow) {
     res.render("404", { quote: quote })
+    return
   }
   if (req.params.userId === user) {
     res.redirect("/profile")
+    return
   } else {
     if (!db.get(`${req.params.userId}.followers_list`).includes(user)) {
       res.redirect(`/profile/${req.params.userId}`)
@@ -284,20 +433,51 @@ app.get('/profile', (req, res) => {
     var following = db.get(`${user}.following`)
     var followers = db.get(`${user}.followers`)
     var joindate = db.get(`${user}.joindate`)
-    res.render('profile', { quote: quote, 
-      username: username, 
-      bio: bio, 
-      avatar: avatar, 
-      rank: rank, 
-      followers: followers, 
-      following: following, 
-      authorized: "true",
-      joindate: joindate
-    })
+    var dark = db.get(`${user}.dark`)
+    if (dark) {
+      res.render('profile', { quote: quote, 
+        username: username, 
+        bio: bio, 
+        avatar: avatar, 
+        rank: rank, 
+        followers: followers, 
+        following: following, 
+        authorized: "true",
+        joindate: joindate,
+        dark: "true"
+      })
+    } else {
+      res.render('profile', { quote: quote, 
+        username: username, 
+        bio: bio, 
+        avatar: avatar, 
+        rank: rank, 
+        followers: followers, 
+        following: following, 
+        authorized: "true",
+        joindate: joindate,
+      })
+    }
   }
 });
 
 // API
+app.get('/api/v1/get-avatar/:userId', (req, res) => {
+  if (!req.params.userId) {
+    res.status(400)
+    return
+  } else {
+    var user = db.get(req.params.userId)
+    if (!user) {
+      res.status(404)
+    } else {
+      var avatar = db.get(`${req.params.userId}.avatar`)
+      res.sendFile("." + avatar)
+      res.status(200)
+    }
+  }
+});
+
 app.get('/logout', (req, res) => {
   var user = getUser(req.cookies)
   if (!user) {
@@ -353,16 +533,23 @@ app.post('/users/signup', (req, res) => {
           return
         }
         var password = req.body.password;
+        if (password.length > 72)
+        {
+          req.flash('error', 'Your password was too long (72 characters limit)');
+          res.redirect('/signup');
+          return;
+        }
+        var hash = bcrypt.hashSync(password, 12);
         var email = req.body.email;
         const now = new Date();
         db.set(`${username}`, {
-          "password" : password, 
+          "password" : hash, 
           "email" : email, 
           "followers": 0,
           "following": 0,
           "followers_list": [],
           "following_list": [],
-          "password" : password, 
+          "password" : hash, 
           "rank" : 'default', 
           "username" : username, 
           "nsfw": false,
@@ -389,8 +576,10 @@ app.post('/settings/submit-changes', (req, res) => {
   var username = getUser(req.cookies)
   var current_password = req.body.currentpass;
   var new_password = req.body.newpass;
+  var bio = req.body.bio;
   var nsfw_check = req.body.nsfwCheck;
   var private_check = req.body.privateCheck;
+  var darkswitch = req.body.darkswitch;  
   if (current_password) {
     if (!new_password) {
       req.flash('error', 'You did not insert the current password.')
@@ -398,14 +587,20 @@ app.post('/settings/submit-changes', (req, res) => {
       return
     }
   }
+  if (current_password.length > 72)
+  {
+    req.flash('error', 'Your password was too long (72 characters limit)');
+    res.redirect('/signup');
+    return;
+  }
   if (current_password) {
-    if (current_password !== db.get(`${username}.password`)) {
+    if (bcrypt.compareSync(current_password, db.get(`${username}.password`))) {
       req.flash('error', 'Your current password is incorrect.')
       res.redirect('/settings')
       return    
     }
   }
-  if (current_password === db.get(`${username}.password`)) {
+  if (bcrypt.compareSync(current_password, db.get(`${username}.password`))) {
     if (new_password.length < 6) {
       req.flash('error', 'Your new password must be 6 characters or more.')
       res.redirect('/settings')
@@ -418,6 +613,14 @@ app.post('/settings/submit-changes', (req, res) => {
     db.set(`${username}.nsfw`, true);
   } else {
     db.set(`${username}.nsfw`, false);
+  }
+  if (darkswitch == "on") {
+    db.set(`${username}.dark`, true);
+  } else {
+    db.set(`${username}.dark`, false);
+  }  
+  if (bio) {
+    db.set(`${username}.bio`, bio)
   }
   if (private_check == "on") {
     db.set(`${username}.private`, true);
@@ -459,8 +662,10 @@ app.post('/users/login', (req, res) => {
     req.flash('error', 'Username invalid.')
     res.redirect('/login')
     return
-  } 
-  if (db.get(`${username}.password`) != password) {
+  }
+  let dbPass = db.get(`${username}.password`);
+  let comparison = bcrypt.compareSync(password, dbPass)
+  if (comparison === false) {
     req.flash('error', 'Password invalid.')
     res.redirect('/login')
     return
@@ -469,8 +674,7 @@ app.post('/users/login', (req, res) => {
   res.cookie('session', `${username}.${session}`)
   db.set(`${username}.session`, `${username}.${session}`);
   res.redirect('/')
-
-});
+}); 
 
 
 // Catch 404s
@@ -487,4 +691,16 @@ app.use((req, res, next) => {
 });
 
 // Start listener
-app.listen(port, () => console.log('Server started listening on port 80!'))
+const privateKey = fs.readFileSync('/etc/letsencrypt/live/sketchel.art/privkey.pem', 'utf8');
+const certificate = fs.readFileSync('/etc/letsencrypt/live/sketchel.art/cert.pem', 'utf8');
+const ca = fs.readFileSync('/etc/letsencrypt/live/sketchel.art/chain.pem', 'utf8');
+
+const credentials = {
+	key: privateKey,
+	cert: certificate,
+	ca: ca
+};
+const httpsServer = https.createServer(credentials, app);
+httpsServer.listen(443, () => {
+	console.log('Server started listening on port 443!');
+});
