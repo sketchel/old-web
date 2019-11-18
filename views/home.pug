@@ -12,16 +12,16 @@ html
       div.container.is-fluid
         div.hero-body
             if authorized
-                h1.title <strong>Welcome back,</strong> #{username} <i class="em em-lower_left_paintbrush" aria-role="presentation" aria-label=""></i>
+                h1.title.is-2 <strong>Welcome back,</strong> #{username} <i class="em em-wave" aria-role="presentation" aria-label="WAVING HAND SIGN"></i>
                 h2.subtitle We've missed you.  
             if !authorized
-                h1.title <strong>Sketchel</strong> <i class="em em-lower_left_paintbrush" aria-role="presentation" aria-label=""></i>,
+                h1.title.is-1 <strong>Sketchel</strong>
                 h2.subtitle The newest platform to upload drawings/animations.   
             if !authorized     
                 div.field
                     p.control
                         a(href="/signup") 
-                            button.button.is-primary.is-rounded Register for Sketchel here.
+                            button.button.is-link.is-rounded Register for Sketchel here.
                             
                         a(href="/login") 
                             button.button.is-primary.is-rounded Or, you can login here.
@@ -33,8 +33,9 @@ html
                             
                         a(href="/feed") 
                             button.button.is-primary.is-rounded See your feed.
+                            
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <ins class="adsbygoogle" style="display:inline-block;width:728px;height:90px" data-ad-client="ca-pub-2539921328018448" data-ad-slot="5011119499"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>                            
     
-    footer.footer
-        p <strong>Sketchel</strong> © <strong>2019</strong>, made with <a href="https://bulma.io">Bulma</a>, <a href="https://expressjs.com/">Express</a> and <a href="https://pugjs.com/">Pug</a> & more libraries, and also <span class="icon has-text-danger"><i class="fas fa-heart"></i></span>.
-        p <a href="/rules">Rules</a> | <a href="/terms">Terms of Service</a> | <a href="/credits">Credits</a>    
-        p <strong>Quote:</strong> #{quote}                
+    include includes/footer.pug             

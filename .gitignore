@@ -1,4 +1,5 @@
 node_modules
 json.sqlite
 *.css
-fontawesome/
+*.svg
+.env

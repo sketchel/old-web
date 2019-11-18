@@ -2,52 +2,51 @@ doctype html
 html 
   include includes/head.pug
   body 
-    if user = true
+    if authorized
         include includes/navbar-2.pug
-    if user = ""
+    if !authorized
         include includes/navbar-1.pug
 
     section.hero.is-primary.is-bold
       div.hero-body
         div.container.is-fluid
-          h1.title Rules for Sketchel <i class="em em-newspaper" aria-role="presentation" aria-label="NEWSPAPER"></i>
-          h2.subtitle Guidelines on what not to do.
-          div.columns.is-multiline
-              div.column.is-one-third
-                  div.box
-                      article(class="notification has-background-white media")
-                          figure(class="media-left")
-                              a(href="/")
-                                  span(class="icon")
-                                      i(class="animated pulse fas fa-home fa-2x")
-                          div(class="media-content")
-                              a.button.is-white(href="/") Wanna go home?
+            h1.title Rules for Sketchel <i class="em em-newspaper" aria-role="presentation" aria-label="NEWSPAPER"></i>
+            h2.subtitle Guidelines on what not to do.
+            div.field
+                p.control
+                    a(href="/signup") 
+                        button.button.is-primary.is-rounded Register for Sketchel here.
 
     br
     div.container
         div.box
             div.container.is-fluid
                 h1.title.is-size-3 Rule #1
-                h2.subtitle You must be 13 years of age or older to use this site.
+                h2.subtitle You must be at least 13 years of age or older to use this site.
                 br
                 h1.title.is-size-3 Rule #2
-                h2.subtitle You may not harass users on this site for any reason whatsoever.
+                h2.subtitle You must not harrass or torment any users on the site for any reason.
                 br
                 h1.title.is-size-3 Rule #3
-                h2.subtitle Don’t abuse anything you’re given access to in Sketchel  
+                h2.subtitle You must not abuse your access to `Sketchel`.
                 br
                 h1.title.is-size-3 Rule #4
-                h2.subtitle Don’t post porn without NSFW option toggled on, you will be suspended on multiple offenses. 
+                h2.subtitle You must not post NSFW artwork without the NSFW toggle switched on for your account. Please be wary of younger users. 
                 br
                 h1.title.is-size-3 Rule #5
-                h2.subtitle Don’t do anything that’ll get you arrested in real life.   
+                h2.subtitle You must not post any sort of illegal content on our site. The legality of things depends your place of residence, and will vary depending on the user.
+
                 br
                 h1.title.is-size-3 Rule #6
-                h2.subtitle Do not post extreme gore, this will result in your post being removed. 
-                br                           
+                h2.subtitle You must not post anything too extreme such as:
+                h2.subtitle - Gore (Snuff included)
+                h2.subtitle - Animal Abuse
+                h2.subtitle - Scat
+                h2.subtitle - Terrorism
+                br                 
+                h1.title.is-size-3 Rule #7
+                h2.subtitle Please try to keep the site as non-political as possible. We intend to keep this site as a simple and non-obstructive for as many people as possible.
+
+                h2.subtitle These rules are regularly enforced and the breaking of them is punished harshly. If required, authorities may be informed in some cases. Be wary.          
     br
-    footer.footer
-      div(class="content")
-          p <strong>Sketchel</strong> © <strong>2019</strong>, made with <a href="https://bulma.io">Bulma</a>, <a href="https://expressjs.com/">Express</a> and <a href="https://pugjs.com/">Pug</a> & more libraries, and also <span class="icon has-text-danger"><i class="fas fa-heart"></i></span>.
-          p <a href="/rules">Rules</a> | <a href="/terms">Terms of Service</a> | <a>Privacy Policy</a>                    
-          p <strong>Quote:</strong> #{quote}    
+    include includes/footer.pug     
