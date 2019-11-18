@@ -19,9 +19,6 @@ var discord = {
     clientId: '645366454618816522',
     clientSecret: 'd2Hfn0cHpPPwoRKtpnuyM8amIxluwxF9'
   },
-  bot: {
-    token: 'NjQ1MzY2NDU0NjE4ODE2NTIy.XdBkSQ.xl9NqXwKhTtToT8uFd_G2zHTdSg'
-  },
   scopes: [
     'identify',
     'email'
