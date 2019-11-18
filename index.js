@@ -10,6 +10,7 @@ const date = require('date-and-time')
 const bcrypt = require('bcrypt')
 const https = require('https')
 const fs = require('fs')
+const helmet = require('helmet')
 const app = express()
 
 var users = new db.table('users')
@@ -41,6 +42,7 @@ app.set('view engine', 'pug')
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(cookieParser())
+app.use(helmet())
 app.use(express.static(__dirname + '/public'))
 
 app.use(session({
