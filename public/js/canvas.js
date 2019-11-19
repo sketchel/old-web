@@ -23,7 +23,28 @@ window.onload = () => {
         if (Sketchel.History.length > 0) {
             download("Sketchel_Export.png", Sketchel.canvas.toDataURL());
         } else {
-            alert("You might want to actually draw something before exporting your image... Just sayin");
+            alert("You might want to actually draw something before exporting your drawing... Just sayin");
+        }
+    });
+    document.getElementsByClassName("SaveBtn")[0].addEventListener("click", (e) => {
+        if (Sketchel.History.length > 0) {
+            let postData = {
+                width: window.Sketchel.canvas.width,
+                height: window.Sketchel.canvas.height,
+                history: window.Sketchel.History
+            };
+
+            $.ajax({
+                type: 'POST',
+                url: 'https://sketchel.art/api/post',
+                processData: false,
+                data: JSON.stringify(postData),
+                success: function(msg){
+                    window.location(msg);
+                }
+            });
+        } else {
+            alert("You might want to actually draw something before saving your drawing... Just sayin");
         }
     });
     document.getElementsByClassName("PencilBtn")[0].addEventListener("click", (e) => {
@@ -180,12 +201,15 @@ window.onload = () => {
     });
     window.Sketchel.canvas.onmousedown = (e) => {
         window.Sketchel.StartDraw(e);
+        console.log(e);
     }
     window.Sketchel.canvas.onmousemove = (e) => {
         window.Sketchel.ContinueDraw(e);
+        console.log(e);
     }
     window.Sketchel.canvas.onmouseup = (e) => {
         window.Sketchel.StopDraw(e);
+        console.log(e);
     }
     setTimeout(() => {
         window.Sketchel.Clear();
@@ -215,8 +239,8 @@ window.onload = () => {
     function getTouchPos(canvasDom, touchEvent) {
         var rect = canvasDom.getBoundingClientRect();
         return {
-            x: touchEvent.touches[0].clientX - rect.left,
-            y: touchEvent.touches[0].clientY - rect.top
+            x: touchEvent.touches[0].clientX,
+            y: touchEvent.touches[0].clientY
         };
     }
     window.Sketchel.StartDraw = (e) => {
@@ -224,9 +248,10 @@ window.onload = () => {
             window.Sketchel.Redo = [];
         //if (e.buttons == 1) {
             window.Sketchel.isDrawing = true;
+            let rect = window.Sketchel.canvas.getBoundingClientRect();
             window.Sketchel.Settings.LastPos = {
-                "x": e.x,
-                "y": e.y
+                "x": e.x - rect.x,
+                "y": e.y - rect.y
             };
             window.Sketchel.ctx.beginPath();
             window.Sketchel.ctx.lineCap = "round";
@@ -234,7 +259,7 @@ window.onload = () => {
             window.Sketchel.ctx.lineWidth = window.Sketchel.Settings.BrushWidth;
             let LastPos = window.Sketchel.Settings.LastPos;
             window.Sketchel.ctx.moveTo(LastPos.x, LastPos.y);
-            window.Sketchel.ctx.lineTo(e.x, e.y);
+            window.Sketchel.ctx.lineTo(e.x - rect.x, e.y - rect.y);
             window.Sketchel.ctx.stroke();
             window.Sketchel.History.push({
                 "type": "brush_draw",
@@ -243,15 +268,15 @@ window.onload = () => {
                     "y": LastPos.y
                 },
                 "to": {
-                    "x": e.x,
-                    "y": e.y
+                    "x": e.x - rect.x,
+                    "y": e.y - rect.y
                 },
                 "color": window.Sketchel.Settings.Color,
                 "width": window.Sketchel.Settings.BrushWidth + ""
             });
             window.Sketchel.Settings.LastPos = {
-                "x": e.x,
-                "y": e.y
+                "x": e.x - rect.x,
+                "y": e.y - rect.y
             };
         //}
     }
@@ -266,6 +291,7 @@ window.onload = () => {
     }
     window.Sketchel.ContinueDraw = (e) => {
         if (window.Sketchel.isDrawing) {
+            let rect = window.Sketchel.canvas.getBoundingClientRect();
             /*if (e.buttons == 0 || e.buttons == 2) {
                 window.Sketchel.isDrawing = false;
                 return;
@@ -276,7 +302,7 @@ window.onload = () => {
             window.Sketchel.ctx.lineWidth = window.Sketchel.Settings.BrushWidth;
             let LastPos = window.Sketchel.Settings.LastPos;
             window.Sketchel.ctx.moveTo(LastPos.x, LastPos.y);
-            window.Sketchel.ctx.lineTo(e.x, e.y);
+            window.Sketchel.ctx.lineTo(e.x - rect.x, e.y - rect.y);
             window.Sketchel.ctx.stroke();
             window.Sketchel.History.push({
                 "type": "brush_draw",
@@ -285,15 +311,15 @@ window.onload = () => {
                     "y": LastPos.y
                 },
                 "to": {
-                    "x": e.x,
-                    "y": e.y
+                    "x": e.x - rect.x,
+                    "y": e.y - rect.y
                 },
                 "color": window.Sketchel.Settings.Color,
                 "width": window.Sketchel.Settings.BrushWidth + ""
             });
             window.Sketchel.Settings.LastPos = {
-                "x": e.x,
-                "y": e.y
+                "x": e.x - rect.x,
+                "y": e.y - rect.y
             };
         }
     }
