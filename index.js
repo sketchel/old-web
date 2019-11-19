@@ -150,6 +150,21 @@ app.get('/maps', (req, res) => {
 
 
 // Public API
+
+app.get('/api/v1/get-user/:userId', (req, res) => {
+  if(!req.params.userId || !users.get(`${req.params.userId}`)) return res.status(404).json({ error: 'You didn\'t provide a userId or that userId didn\'t exist.' })
+  let bio = users.get(`${req.params.userId}.bio`),
+    avatar = users.get(`${req.params.userId}.avatar`),
+    rank = users.get(`${req.params.userId}.rank`),
+    following = users.get(`${req.params.userId}.following`),
+    followers = users.get(`${req.params.userId}.followers`),
+    joindate = users.get(`${req.params.userId}.joindate`),
+    follow_status = users.get(`${req.params.userId}.followers_list`).includes(user),
+    following_list = users.get(`${req.params.userId}.following_list`),
+    follower_list = users.get(`${req.params.userId}.followers_list`)
+  return res.status(200).json({ bio: bio, avatar: avatar, rank: rank, following: following, followers: followers, join_date: joindate, follow_status: follow_status, following: following_list, followers: follower_list })
+})
+
 app.post('/api/post', (req, res) => {
   
   try {
