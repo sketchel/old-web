@@ -1,0 +1,12 @@
+doctype html
+html 
+  include includes/head.pug
+  
+  body
+    if authorized
+        include includes/navbar-2.pug
+    if !authorized
+        include includes/navbar-1.pug
+    
+    figure.image.is-16by9
+        iframe(class="has-ratio", width="640", height="360", src=image_url, frameborder="0")

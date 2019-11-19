@@ -1,23 +1,26 @@
-const express = require('express');
-const db = require('quick.db');
-const flash = require('connect-flash');
-const cookieParser = require('cookie-parser');
-const bodyParser = require('body-parser');
-const passport = require('passport');
-const session = require('cookie-session');
-const uuidv4 = require('uuid/v4');
-const date = require('date-and-time');
-const bcrypt = require('bcrypt');
-const https = require('https');
+const express = require('express')
+const db = require('quick.db')
+const flash = require('connect-flash')
+const cookieParser = require('cookie-parser')
+const bodyParser = require('body-parser')
+const passport = require('passport')
+const session = require('cookie-session')
+const uuidv4 = require('uuid/v4')
+const date = require('date-and-time')
+const bcrypt = require('bcrypt')
+const https = require('https')
 const fs = require('fs');
 const app = express();
+const markdown = require('markdown')
+const xss = require('xss')
 const request = require('request');
 const { createCanvas, loadImage } = require('canvas')
-const helmet = require('helmet');
-
-require('dotenv').config()
+var base64ToImage = require('base64-to-image')
+const Sentry = require('@sentry/node')
+Sentry.init({ dsn: 'https://8ae48a0f7a4645e0b72042f5cb3f85fc@sentry.io/1826211' })
 
 var users = new db.table('users')
+var posts = new db.table('posts')
 
 var discord = {
   "oauth": {
@@ -25,7 +28,7 @@ var discord = {
     "clientSecret": "d2Hfn0cHpPPwoRKtpnuyM8amIxluwxF9"
   },
   "bot": {
-    "token": process.env.TOKEN
+    "token": "NjQ1MzY2NDU0NjE4ODE2NTIy.XdBkSQ.xl9NqXwKhTtToT8uFd_G2zHTdSg"
   },
   "scopes": [
     "identify",
@@ -36,8 +39,8 @@ discord.scope = () => {
   return discord.scopes.join("%20");
 }
 const grecaptcha = {
-  "site": process.env.RECAPTCHA_SITE,
-  "secret": process.env.RECAPTCHA_SECRET
+  "site": "6LctSsMUAAAAADBNNLlYhZ-i7coSpp4iOQyYOMpv",
+  "secret": "6LctSsMUAAAAAAIcCz8EeKT-RnrNAAFpyoQBuhuP"
 };
 
 // Anti-Deus Ex Machina
@@ -47,9 +50,8 @@ const grecaptcha = {
 app.set('view engine', 'pug')
 
 // Change middleware
-app.use(helmet())
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json({limit: '50mb'}))
+app.use(bodyParser.urlencoded({ extended: false, limit: '50mb'}))
 app.use(cookieParser())
 app.use(express.static(__dirname + '/public'))
 
@@ -125,6 +127,10 @@ function queryParam(str) {
 function webPush(user) {
 
 }
+function postToSketchel(post, cookies) {
+  
+}
+
 
 // Sitemap for better search results
 app.get('/sitemap.xml', (req, res) => {
@@ -144,52 +150,95 @@ app.get('/maps', (req, res) => {
 
 
 // Public API
-app.post('/api/render', (req, res) => {
-  const canvas = createCanvas(req.body.width, req.body.height);
-  const ctx = canvas.getContext('2d');
-
-  req.body.history.forEach((elem) => {
+app.post('/api/post', (req, res) => {
+  
+  try {
+    let user = getUser(req.cookies)
+    if (!user) {
+      throw "User isn't logged in."
+    }
+    let body = JSON.parse(Object.keys(req.body)[0]);
+    let canvas = createCanvas(body.width, body.height);
+    let ctx = canvas.getContext('2d');
     ctx.beginPath();
     ctx.lineCap = "round";
-    ctx.strokeStyle = elem.color;
-    ctx.lineWidth = elem.width;
-    ctx.moveTo(elem.from.x, elem.from.y);
-    ctx.lineTo(elem.to.x, elem.to.y);
-    ctx.stroke();
-  });
-  res.send(canvas.toDataURL());
+    ctx.strokeStyle = "#ffffff";
+    ctx.lineWidth = body.width*body.height;
+    res.set("brushSize", body.width*body.height);
+    ctx.moveTo(1, 1);
+    ctx.lineTo(body.width, body.height);
+    for (let iii = 0; iii < body.history.length; iii++) {
+      let el = body.history[iii];
+
+      ctx.beginPath();
+      ctx.lineCap = "round";
+      ctx.strokeStyle = el.color;
+      ctx.lineWidth = el.width;
+      ctx.moveTo(el.from.x, el.from.y);
+      ctx.lineTo(el.to.x, el.to.y);
+      ctx.stroke();
+    }
+    let id = "";
+    let path = "";
+    while (true)
+    {
+      id = uuidv4()
+      path = __dirname + "/public/cdn/" + id + ".png";
+      if (!fs.existsSync(path))
+      {
+        break;
+      }
+    }
+    let image = "https://sketchel.art/cdn/" + path.split("/public/cdn/")[1]
+    let base = canvas.toDataURL()
+    var base64Data = base.replace(/^data:image\/png;base64,/, "");
+
+    posts.set(id, {"image_url": image, "author": user, "likes": 0, "dislikes": 0, "comments": 0, "comments_list": []})
+    users.add(`${user}.posts`, 1)
+    users.push(`${user}.posts_list`, id)
+    res.send(`${id}`)
+
+    require("fs").writeFile(path, base64Data, 'base64', function(err) {
+      console.log(err);
+    });
+  } catch (err) {
+    let id = Sentry.captureException(err);
+    res.send("There was an error with your request. Reference error ID " + id + " with support");
+  }
 })
 
-app.get('/api/v1/get-user/:userId', (req, res) => {
-  if (!req.params.userId) {
-    res.status(400)
-    return
-  } else {
-    var user = users.get(req.params.userId)
-    if (!user) {
-      res.status(404)
-    } else {
-      user = req.params.userId
-      var bio = users.get(`${user}.bio`)
-      var avatar = users.get(`${user}.avatar`)
-      var rank = users.get(`${user}.rank`)
-      var following = users.get(`${user}.following`)
-      var followers = users.get(`${user}.followers`)
-      var joindate = users.get(`${user}.joindate`)
-      res.json({ bio:bio, avatar:avatar, rank:rank, following:following, followers:followers, joindate:joindate })
-      res.status(200)
-    }
+app.get('/post/:postID', (req, res) => {
+  var quote = getQuote()
+  var user = getUser(req.cookies) 
+  var post = req.params.postID;
+  if (!posts.get(`${post}`)) {
+    res.redirect('/postnotfoundlol')
   }
-});
+  var likes = posts.get(`${post}.likes`)
+  var comments = posts.get(`${post}.comments`)
+  var comments_list = posts.get(`${post}.comments_list`)
+  var dislikes = posts.get(`${post}.dislikes`)
+  var image_url = posts.get(`${post}.image_url`)
+  var rating = dislikes + likes
+  if (!user) {
+    res.render('post', { quote: quote, image_url: image_url, likes: likes, dislikes: dislikes, comments: comments, comments_list: comments_list, rating: rating })
+  } else {
+    res.render('post', { quote: quote, image_url: image_url, username: user, authorized: "true", likes: likes, dislikes: dislikes, comments: comments, comments_list: comments_list, rating: rating })
+  }
+})
+
 
 // Load pages
+app.get('/beta/canvas', (req, res) => {
+  res.render('canvas')
+})
 app.get('/beta/create', (req, res) => {
   var quote = getQuote()
   var user = getUser(req.cookies) 
   if (!user) {
-    res.render('canvas', { quote: quote })
+    res.render('create', { quote: quote })
   } else {
-    res.render('canvas', { quote: quote, username: user, authorized: "true" })
+    res.render('create', { quote: quote, username: user, authorized: "true" })
   }
 })
 
@@ -395,7 +444,7 @@ app.get('/profile/:userId', (req, res) => {
       res.render('user-profile', { quote: quote, 
         user: req.params.userId, 
         username: user, 
-        bio: bio, 
+        bio: markdown.parse(xss(bio)), 
         avatar: avatar, 
         rank: rank, 
         followers: followers, 
@@ -410,7 +459,7 @@ app.get('/profile/:userId', (req, res) => {
       res.render('user-profile', { quote: quote, 
         user: req.params.userId, 
         username: user, 
-        bio: bio, 
+        bio: markdown.parse(xss(bio)),  
         avatar: avatar, 
         rank: rank, 
         followers: followers, 
