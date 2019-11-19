@@ -3,6 +3,11 @@ html
   include includes/head.pug
 
   body
+    script(src='https://www.google.com/recaptcha/api.js' async defer)
+    script.
+      function submitForm(response) {
+        document.getElementById("loginForm").submit();
+      }
     section.hero.is-primary.is-bold
       div.container
         div.hero-head
@@ -27,7 +32,7 @@ html
         div(align="center")
           div(class="container")
             div.container
-              form(method="POST", action="/users/signup")
+              form(method="POST", action="/users/signup", id="loginForm")
                 div.field
                   div.control
                     input(class="input is-rounded", for="inputUsername", type="text", name="username", placeholder="username")
@@ -46,7 +51,7 @@ html
                       label(for="tosCheck") I agree to the <a href="/terms">Terms of Service</a> and confirm I am above the age of 13.                
 
 
-                input(class="button is-success is-medium is-rounded", type="submit", value="Register")  
+                input(class="button is-success is-medium is-rounded g-recaptcha", data-sitekey=gsitekey, type="submit", value="Register", data-callback="submitForm")  
               
     br
     div(align="center")

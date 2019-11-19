@@ -4,7 +4,6 @@
         <title>Sketchel canvas</title>
         
         <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/gh/davatron5000/FitText.js/jquery.fittext.js"></script>
         <script src="https://browser.sentry-cdn.com/5.8.0/bundle.min.js" integrity="sha384-qlxNoEAgNliJy7zXiR+uKx/fFAimdeVfEOK0SA5/wrXLioMmASbjvfVAMaQFKVI6" crossorigin="anonymous"></script>
         <script>Sentry.init({dsn:'https://652559f06b804713a8e147fd6e3e3fe4@sentry.io/1820397'});</script>
         <link href="https://fonts.googleapis.com/css?family=Ubuntu&display=swap" rel="stylesheet">
@@ -15,7 +14,11 @@
     </head>
     <body>
         <div class="SketchelApp">
-            <canvas class="SketchelCanvas">Your browser doesn't support canvas... Are you using the first version of Internet Explorer or something??</canvas>
+            <div class="SketchelCanvasWrapper">
+                <canvas class="SketchelCanvas">
+                    Your browser doesn't support canvas... Are you using the first version of Internet Explorer or something??
+                </canvas>
+            </div>
             <div class="UndoBtn"></div>
             <div class="RedoBtn"></div>
             <div class="ClearBtn"></div>

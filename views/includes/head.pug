@@ -17,7 +17,10 @@ head
   meta(property="twitter:title", content="Sketchel — Draw, Edit and Look")
   meta(property="twitter:description", content="Sketchel is a new modern drawing website.")
   meta(property="twitter:image", content="/assets/sketchel.png")
-  link(rel='stylesheet', type="text/css", href='/css/style.css')
+  if !dark
+    link(rel='stylesheet', type="text/css", href='/css/style.css')
+  else 
+    link(rel='stylesheet', type="text/css", href='/css/dark.css')
   link(rel='stylesheet', href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.2/animate.min.css")
   script(src="https://kit.fontawesome.com/9558a49d61.js", crossorigin="anonymous")
   script(src="/js/app.js")

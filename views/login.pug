@@ -3,6 +3,15 @@ html
   include includes/head.pug
 
   body
+    script(src='https://www.google.com/recaptcha/api.js' async defer)
+    script.
+      function submitForm(response) {
+        document.getElementById("loginForm").submit();
+      }
+    style.
+      .gcode {
+        display: none;
+      }
     section.hero.is-primary.is-bold
       div.container
         div.hero-head
@@ -25,16 +34,19 @@ html
       div(align="center")
         div(class="container")
           div.container
-            form(method="POST", action="/users/login")
+            form(method="POST", action="/users/login", id="loginForm")
               div.field
                 div.control
                   input(class="input is-rounded", for="inputUsername", type="text", name="username", placeholder="login")
               div.field
                 div.control
                   input(class="input is-rounded", for="inputPassword", type="password", name="password", placeholder="password")
+              div.field
+                div.control
+                  input(class="input is-rounded gcode", type="password", name="g-recap", placeholder="googleRecaptcha")
               br
               br  
-              input(class="button is-success is-medium is-rounded", type="submit", value="Login")  
+              input(class="button is-success is-medium is-rounded g-recaptcha", data-sitekey=gsitekey, type="submit", value="Login", data-callback="submitForm")  
               
     br
     div(align="center")

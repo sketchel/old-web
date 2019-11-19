@@ -2,7 +2,7 @@
   
   ![Logo](public/assets/sketchel-small.png)
   
-  <h1>Sketchel</h1>
+  <h1><b>Sketchel<b></h1>
   A simple community-driven drawing application.
   
   <a href="https://sketchel.art">sketchel.art</a>
@@ -20,18 +20,18 @@
  
 ## 👾 Features
  
-- **🖼 Premium drawing canvas** - We've developed a premium drawing canvas that looks clean and intuitive. 
-- **🔒 Maximum security** - We've developed maximum security methods to secure your account.
-- **📌 Automatic saves** Saves your progress so you can continue later.
-- **✨ Smart UI** - Sketchel has a smart and easygoing interface smooth soothes the eyes.
+- **🖌️ Premium Drawing Experience** - We've developed a premium drawing experience that fluid and consistent.
+- **🔒 Maximum Security** - Sketchel comes with the intergration of the best security methods in order to secure your account and precious artworks included.
+- **📌 Automatic Saving** - Saves your progress so you can continue later.
+- **✨ Intuative Interface** - Sketchel has a smart and simplistic interface that is easy to master.
  
 ## 🤝 Support
  
-For support, join our support discord server.
+For support (and to support us), come and join our Discord server!
  
 [![Discord](https://discordapp.com/api/guilds/626585520922951690/widget.png?style=banner2)](https://discord.gg/sG7KSbW)
  
-## 🧱 Built With
+## 🧱 Building Blocks
  
 - [Express](https://expressjs.com) - The web framework Sketchel is using.
 - [Bulma](https://bulma.io) - The CSS framework Sketchel is using.
@@ -39,12 +39,14 @@ For support, join our support discord server.
 - [quick.db](https://quickdb.js.org/) - The database Sketchel is using.
 - [bcrypt](https://npm.im/bcrypt) - The encryption method Sketchel is using.
  
-## 🖋 Authors
+## 🖋 Developers
  
-- **xMinota** _aka Minota_ - _Main Developer_ - [Minota](https://github.com/xminota)
-- **HVENetworks** _aka HVE_ - _Development Help_ - [HVENetworks](https://github.com/HVEVB)
-- **EnderDev** _aka EnderDev_ - _Development Help_ - [EnderDev](https://github.com/EnderDev)
+- **xMinota** _a.k.a. Minota_ - _Main Developer_ - [Minota](https://github.com/xminota)
+- **HVENetworks** _a.k.a. HVE_ - _Development Help_ - [HVENetworks](https://github.com/HVEVB)
+- **EnderDev** _a.k.a. EnderDev_ - _Development Help_ - [EnderDev](https://github.com/EnderDev)
  
-## 🤵 License
+## 🤵 Licensing
  
 This project is licensed under the [MIT License](https://opensource.org/licenses/MIT) - see the [LICENSE](LICENSE) file for more info.
+
+P.S. Also made with ❤️.

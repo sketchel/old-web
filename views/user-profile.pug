@@ -27,7 +27,7 @@ html
             div.modal-background
             div.modal-card
                 header.modal-card-head
-                    p.modal-card-title #{username} is Following
+                    p.modal-card-title #{user} is Following
                     button.button.is-small(aria-label="close", id="exitFollowingModal", data-target="followingModal")
                         span.icon.is-small
                             i.fas.fa-times
@@ -36,8 +36,9 @@ html
                         div.box
                             .media
                                 .media-left
-                                    figure.image.is-64x64
-                                        img(src="https://sketchel.art/api/v1/get-avatar/" + val)
+                                    a(href="/profile/" + val)
+                                        figure.image.is-64x64
+                                            img(src="https://sketchel.art/api/v1/get-avatar/" + val)
                                 .media-content
                                     a(href="/profile/" + val)
                                         if rank = "owner"
@@ -48,7 +49,7 @@ html
             div.modal-background
             div.modal-card
                 header.modal-card-head
-                    p.modal-card-title #{username}'s Followers
+                    p.modal-card-title #{user}'s Followers
                     button.button.is-small(aria-label="close", id="exitFollowerModal", data-target="followerModal")
                         span.icon.is-small
                             i.fas.fa-times
@@ -57,8 +58,9 @@ html
                         div.box
                             .media
                                 .media-left
-                                    figure.image.is-64x64
-                                        img(src="https://sketchel.art/api/v1/get-avatar/" + val)
+                                    a(href="/profile/" + val)
+                                        figure.image.is-64x64
+                                            img(src="https://sketchel.art/api/v1/get-avatar/" + val)
                                 .media-content
                                     a(href="/profile/" + val)
                                         if rank = "owner"
@@ -144,4 +146,3 @@ html
             p <a href="/rules">Rules</a> | <a href="/terms">Terms of Service</a> | <a href="/credits">Credits</a>    
             p <strong>Quote:</strong> #{quote}             
 
-                
