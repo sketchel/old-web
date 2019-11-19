@@ -160,6 +160,28 @@ app.post('/api/render', (req, res) => {
   res.send(canvas.toDataURL());
 })
 
+app.get('/api/v1/get-user/:userId', (req, res) => {
+  if (!req.params.userId) {
+    res.status(400)
+    return
+  } else {
+    var user = users.get(req.params.userId)
+    if (!user) {
+      res.status(404)
+    } else {
+      var bio = users.get(`${user}.bio`)
+      var avatar = users.get(`${user}.avatar`)
+      var rank = users.get(`${user}.rank`)
+      var following = users.get(`${user}.following`)
+      var followers = users.get(`${user}.followers`)
+      var joindate = users.get(`${user}.joindate`)
+      var dark = users.get(`${user}.dark`)
+      res.json({ bio:bio, avatar:avatar, rank:rank, following:following, followers:followers, joindate:joindate, dark:dark })
+      res.status(200)
+    }
+  }
+});
+
 // Load pages
 app.get('/beta/create', (req, res) => {
   var quote = getQuote()
