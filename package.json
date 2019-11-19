@@ -4,11 +4,12 @@
   "description": "A modern, community-driven, social drawing website.",
   "main": "server.js",
   "scripts": {
-    "start": "nodemon index.js",
+    "start": "npm run css-build && npm run dark-build && nodemon index.js",
+    "dev": "npm run css-build && npm run dark-build && cross-env HTTPS=false npm run start",
     "css-build": "node-sass --omit-source-map-url public/scss/style.scss public/css/style.css",
     "css-watch": "npm run css-build -- --watch",
     "dark-build": "node-sass --omit-source-map-url public/scss/dark.scss public/css/dark.css",
-    "dark-watch": "npm run dark-build -- --watch"    
+    "dark-watch": "npm run dark-build -- --watch"
   },
   "repository": {
     "type": "git",
@@ -39,11 +40,15 @@
     "quick.db": "^7.0.0-b22"
   },
   "dependencies": {
+    "bcrypt": "^3.0.7",
     "bulma-checkradio": "^1.1.1",
     "bulma-divider": "^0.2.0",
+    "bulma-switch": "^2.0.0",
     "bulma-tooltip": "^3.0.2",
     "connect-flash": "^0.1.1",
+    "cross-env": "^6.0.3",
     "express-session": "^1.17.0",
+    "opn": "^6.0.0",
     "passport": "^0.4.0",
     "pug": "^2.0.4",
     "session": "^0.1.0",

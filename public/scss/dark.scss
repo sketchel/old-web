@@ -71,3 +71,41 @@ $input-shadow: 1.5;
 @import '../../node_modules/bulma-checkradio/dist/css/bulma-checkradio.sass';
 @import '../../node_modules/bulma-divider/dist/css/bulma-divider.sass';
 @import '../../node_modules/bulma-switch/dist/css/bulma-switch.sass';
+
+// Classes
+body {
+    font-size: 18px;
+}
+
+panel {
+    position: absolute;
+    top: 45px;
+    left: 525px;
+    opacity: 0;
+    pointer-events: none;
+    background-color: white;
+    z-index: 999;
+    width: 460px;
+    height: 600px;
+    transform: scale(0.9);
+    border-radius: 10px;
+    box-shadow: 2px 1px 8px 1px #00000047;
+    padding: 25px 0;
+    margin-top: 5px;
+    transition: 0.1s opacity, 0.2s margin-top;
+}
+
+.navbar-dropdown a.navbar-item:hover, .navbar-dropdown a.navbar-item {
+    background-color: transparent !important;
+    color: black !important;
+}
+
+.navbar-link:hover {
+    color: black !important;
+}
+
+.navbar-dropdown:hover {
+    .navbar-link {
+        color: black !important;
+    }
+}

@@ -2,22 +2,23 @@ doctype html
 html 
   include includes/head.pug
   body 
-    if authorized
-        include includes/navbar-2.pug
-    if !authorized
-        include includes/navbar-1.pug
-
     section.hero.is-primary.is-bold
-      div.hero-body
-        h1.title Here are the terms of service for Sketchel
-        h2.subtitle Basically, what that means is that you agree to this while using the site.
-        br
-        a.button.is-white(href="/") Wanna go home?
+      div.container
+        div.hero-head
+          if authorized
+              include includes/navbar-2 
+          if !authorized
+              include includes/navbar-1 
+        div.hero-body
+          h1.title Here are the terms of service for Sketchel
+          h2.subtitle Basically, what that means is that you agree to this while using the site.
+          br
+          a.button.is-white(href="/") Wanna go home?
 
     br
     div.container
         div.box
-            div.container.is-fluid
+            div.container
                 p Unfortunately, no one at Sketchel is a lawyer, so no one knows how to make a terms of a service, however, let's make one that's clear and easy to use.
                 hr
                 p By using Sketchel, you agree to the rules and the privacy policy.
@@ -26,8 +27,8 @@ html
                 hr
                 p Have fun.
     br
-    footer.footer
-      div(class="content")
-          p <strong>Sketchel</strong> © <strong>2019</strong>, made with <a href="https://bulma.io">Bulma</a>, <a href="https://expressjs.com/">Express</a> and <a href="https://pugjs.com/">Pug</a> & more libraries, and also <span class="icon has-text-danger"><i class="fas fa-heart"></i></span>.
-          p <a href="/rules">Rules</a> | <a href="/terms">Terms of Service</a> | <a>Privacy Policy</a>                    
-          p <strong>Quote:</strong> #{quote}                
+    footer.footer.has-text-centered
+        div.container
+            p <strong>Sketchel</strong> © <strong>2019</strong>, made with <a href="https://bulma.io">Bulma</a>, <a href="https://expressjs.com/">Express</a> and <a href="https://pugjs.com/">Pug</a> & more libraries, and also <span class="icon has-text-danger"><i class="fas fa-heart"></i></span>.
+            p <a href="/rules">Rules</a> | <a href="/terms">Terms of Service</a> | <a href="/credits">Credits</a>    
+            p <strong>Quote:</strong> #{quote}             

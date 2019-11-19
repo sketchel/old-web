@@ -2,14 +2,14 @@ doctype html
 html 
   include includes/head.pug
   body
-    if authorized
-        include includes/navbar-2 
-    if !authorized
-        include includes/navbar-1    
-
     if !authorized 
         section.hero.is-medium.is-danger.is-bold
-            div.container.is-fluid
+            div.container
+                div.hero-head
+                    if authorized
+                        include includes/navbar-2 
+                    if !authorized
+                        include includes/navbar-1 
                 div.hero-body
                     h1.title You need to be logged in to use this page. <i class="em em-bust_in_silhouette" aria-role="presentation" aria-label=""></i> 
                     h2.subtitle You're trying to visit a page you need to be logged into to use.
@@ -67,7 +67,7 @@ html
                                             p.title.is-4 #{val}                                             
 
 
-        div.container.is-fluid
+        div.container
             div.columns.is-multiline
                 .column.is-one-quarter
                     div.card
@@ -78,7 +78,7 @@ html
                             .media
                                 .media-left
                                     figure.image.is-64x64
-                                        img(src=avatar)
+                                        img(src=avatar, style="border-radius: 50px;box-shadow: 0 0 2px black;"))
                                 .media-content
                                     if rank = "owner"
                                         p.title.is-4 #{user}   
@@ -138,9 +138,10 @@ html
                                     
 
     br
-    footer.footer
-        p <strong>Sketchel</strong> © <strong>2019</strong>, made with <a href="https://bulma.io">Bulma</a>, <a href="https://expressjs.com/">Express</a> and <a href="https://pugjs.com/">Pug</a> & more libraries, and also <span class="icon has-text-danger"><i class="fas fa-heart"></i></span>.
-        p <a href="/rules">Rules</a> | <a href="/terms">Terms of Service</a> | <a href="/credits">Credits</a>    
-        p <strong>Quote:</strong> #{quote}                
+    footer.footer.has-text-centered
+        div.container
+            p <strong>Sketchel</strong> © <strong>2019</strong>, made with <a href="https://bulma.io">Bulma</a>, <a href="https://expressjs.com/">Express</a> and <a href="https://pugjs.com/">Pug</a> & more libraries, and also <span class="icon has-text-danger"><i class="fas fa-heart"></i></span>.
+            p <a href="/rules">Rules</a> | <a href="/terms">Terms of Service</a> | <a href="/credits">Credits</a>    
+            p <strong>Quote:</strong> #{quote}             
 
                 
