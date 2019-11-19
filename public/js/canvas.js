@@ -9,24 +9,11 @@ function download(filename, data) {
 }
 
 window.onload = () => {
-    $(".BrushSizeParagraph").fitText();
-    window.addEventListener('resize', () => {
-        if (window.innerWidth > window.innerHeight)
-        {
-            document.querySelector("html").style.width = "100vh";
-            document.querySelector("html").style.height = "100vh";
-        }
-        else
-        {
-            document.querySelector("html").style.width = "100vw";
-            document.querySelector("html").style.height = "100vw";
-        }
-    });
-    if (window.innerWidth > window.innerHeight)
-    {
-        document.querySelector("html").style.width = "100vh";
-        document.querySelector("html").style.height = "100vh";
-    }
+    function preventBehavior(e) {
+        e.preventDefault(); 
+    };
+    
+    document.addEventListener("touchmove", preventBehavior, {passive: false});
     window.Sketchel = new Object();
     window.Sketchel.Settings = {
         "BrushWidth": 10,
@@ -39,10 +26,16 @@ window.onload = () => {
             alert("You might want to actually draw something before exporting your image... Just sayin");
         }
     });
+    document.getElementsByClassName("PencilBtn")[0].addEventListener("click", (e) => {
+        window.Sketchel.canvas.style.cursor = "url(pencilCur.svg) 5 5, auto";
+        window.Sketchel.pickr.applyColor();
+    });
+    document.getElementsByClassName("EraserBtn")[0].addEventListener("click", (e) => {
+        window.Sketchel.canvas.style.cursor = "url(eraserCur.svg) 5 5, auto";
+        window.Sketchel.Settings.Color = "#ffffff";
+    });
     window.Sketchel.Redraw = () => {
-        let oldHistory = window.Sketchel.History;
         window.Sketchel.Clear();
-        window.Sketchel.History = oldHistory;
         window.Sketchel.History.forEach((el) => {
             if (el.type == "brush_draw")
             {
@@ -60,11 +53,16 @@ window.onload = () => {
             }
         });
     }
+    document.onkeydown = (e) => {
+        var evtobj = window.event? event : e;
+        if (evtobj.keyCode == 90 && evtobj.ctrlKey) 
+            document.getElementsByClassName("UndoBtn")[0].click();
+        if (evtobj.keyCode == 89 && evtobj.ctrlKey)
+            document.getElementsByClassName("RedoBtn")[0].click();
+    }
     document.getElementsByClassName("UndoBtn")[0].addEventListener("click", (e) => {
-        if (window.Sketchel.History.length == 0)
-        {
-            return;
-        }
+        if (window.Sketchel.isDrawing) return;
+        if (window.Sketchel.History.length == 0) return;
         while (true) {
             window.Sketchel.Redo.push(window.Sketchel.History[window.Sketchel.History.length-1]);
             window.Sketchel.History.splice(-1,1);
@@ -76,22 +74,39 @@ window.onload = () => {
         }
     });
     document.getElementsByClassName("RedoBtn")[0].addEventListener("click", (e) => {
-        if (window.Sketchel.Redo.length == 0)
-        {
-            return;
-        }
+        if (window.Sketchel.isDrawing) return;
+        if (window.Sketchel.Redo.length == 0) return;
+        var final = false;
         while (true) {
+            window.Sketchel.Redo[window.Sketchel.Redo.length-1].final = false;
+            console.log(window.Sketchel.Redo[window.Sketchel.Redo.length-1]);
             window.Sketchel.History.push(window.Sketchel.Redo[window.Sketchel.Redo.length-1]);
             window.Sketchel.Redo.splice(-1,1);
-            if ((!window.Sketchel.Redo[window.Sketchel.Redo.length-1]) || window.Sketchel.Redo[window.Sketchel.Redo.length-1].final)
+            if ((!window.Sketchel.Redo[window.Sketchel.Redo.length-1]) || final)
             {
                 window.Sketchel.Redraw();
                 return;
             }
+            if (window.Sketchel.Redo[window.Sketchel.Redo.length-1].final) final = true;
         }
     });
     document.getElementsByClassName("ClearBtn")[0].addEventListener("click", (e) => {
+        window.Sketchel.Redo = [];
         window.Sketchel.Clear();
+        window.Sketchel.History.push({
+            "type": "brush_draw",
+            "from": {
+                "x": 1,
+                "y": 1
+            },
+            "to": {
+                "x": window.Sketchel.canvas.height,
+                "y": window.Sketchel.canvas.width
+            },
+            "color": "#ffffff",
+            "width": 10000,
+            "final": true
+        });
     });
     document.getElementsByClassName("Brushslider")[0].onmousemove = (e) => {
         window.Sketchel.Settings.BrushWidth = e.target.value;
@@ -140,13 +155,12 @@ window.onload = () => {
     window.Sketchel.canvas = document.getElementsByClassName("SketchelCanvas")[0];
     window.Sketchel.ctx = window.Sketchel.canvas.getContext("2d");
 
-    window.Sketchel.canvas.width = window.Sketchel.canvas.clientWidth;
-    window.Sketchel.canvas.height = window.Sketchel.canvas.clientHeight;
+    window.Sketchel.canvas.width = window.Sketchel.canvas.clientWidth - 20;
+    window.Sketchel.canvas.height = window.Sketchel.canvas.clientHeight - 20;
     window.Sketchel.History = [];
     window.Sketchel.Settings.Color = window.Sketchel.pickr.getColor().toHEXA().join('');
     window.Sketchel.Redo = new Array();
     window.Sketchel.Clear = (e) => {
-        window.Sketchel.History = [];
         window.Sketchel.ctx.beginPath();
         window.Sketchel.ctx.lineCap = "round";
         window.Sketchel.ctx.strokeStyle = "#ffffff";
@@ -206,7 +220,9 @@ window.onload = () => {
         };
     }
     window.Sketchel.StartDraw = (e) => {
-        if (e.buttons == 1) {
+        if (window.Sketchel.Redo.length > 0)
+            window.Sketchel.Redo = [];
+        //if (e.buttons == 1) {
             window.Sketchel.isDrawing = true;
             window.Sketchel.Settings.LastPos = {
                 "x": e.x,
@@ -231,19 +247,22 @@ window.onload = () => {
                     "y": e.y
                 },
                 "color": window.Sketchel.Settings.Color,
-                "width": window.Sketchel.Settings.BrushWidth
+                "width": window.Sketchel.Settings.BrushWidth + ""
             });
             window.Sketchel.Settings.LastPos = {
                 "x": e.x,
                 "y": e.y
             };
-        }
+        //}
     }
     window.Sketchel.StopDraw = (e) => {
-        //if (e.buttons == 0 || e.buttons == 2) {
-            window.Sketchel.isDrawing = false;
-            window.Sketchel.History[window.Sketchel.History.length-1].final = true;
-        //}
+        if (e.buttons)
+        {
+            if (e.buttons == 1) return;
+            if (e.buttons == 3) return;
+        }
+        window.Sketchel.isDrawing = false;
+        window.Sketchel.History[window.Sketchel.History.length-1].final = true;
     }
     window.Sketchel.ContinueDraw = (e) => {
         if (window.Sketchel.isDrawing) {
@@ -270,7 +289,7 @@ window.onload = () => {
                     "y": e.y
                 },
                 "color": window.Sketchel.Settings.Color,
-                "width": window.Sketchel.Settings.BrushWidth
+                "width": window.Sketchel.Settings.BrushWidth + ""
             });
             window.Sketchel.Settings.LastPos = {
                 "x": e.x,
