@@ -160,7 +160,6 @@ app.get('/api/v1/get-user/:userId', (req, res) => {
     following = users.get(`${req.params.userId}.following`),
     followers = users.get(`${req.params.userId}.followers`),
     joindate = users.get(`${req.params.userId}.joindate`),
-    follow_status = users.get(`${req.params.userId}.followers_list`).includes(user),
     following_list = users.get(`${req.params.userId}.following_list`),
     follower_list = users.get(`${req.params.userId}.followers_list`)
   return res.status(200).json({ bio: bio, avatar: avatar, rank: rank, following: following, followers: followers, join_date: joindate, follow_status: follow_status, following: following_list, followers: follower_list })
