@@ -4,7 +4,7 @@ const flash = require('connect-flash')
 const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser')
 const passport = require('passport')
-const session = require('cookie-session')
+const session = require('express-session')
 const uuidv4 = require('uuid/v4')
 const date = require('date-and-time')
 const bcrypt = require('bcrypt')
@@ -150,6 +150,67 @@ app.get('/maps', (req, res) => {
 
 
 // Public API
+
+
+app.get('/api/v1/get-user/:userId', (req, res) => {
+  if(!req.params.userId || !users.get(`${req.params.userId}`)) return res.status(404).json({ error: 'You didn\'t provide a userId or that userId didn\'t exist.' })
+  let bio = users.get(`${req.params.userId}.bio`),
+    avatar = users.get(`${req.params.userId}.avatar`),
+    rank = users.get(`${req.params.userId}.rank`),
+    following = users.get(`${req.params.userId}.following`),
+    followers = users.get(`${req.params.userId}.followers`),
+    joindate = users.get(`${req.params.userId}.joindate`),
+    follow_status = users.get(`${req.params.userId}.followers_list`).includes(user),
+    following_list = users.get(`${req.params.userId}.following_list`),
+    follower_list = users.get(`${req.params.userId}.followers_list`)
+  return res.status(200).json({ bio: bio, avatar: avatar, rank: rank, following: following, followers: followers, join_date: joindate, follow_status: follow_status, following: following_list, followers: follower_list })
+})
+
+/**
+app.post('/api/render', (req, res) => {
+  try {
+    let body = JSON.parse(Object.keys(req.body)[0]);
+    let canvas = createCanvas(body.width, body.height);
+    let ctx = canvas.getContext('2d');
+    ctx.beginPath();
+    ctx.lineCap = "round";
+    ctx.strokeStyle = "#ffffff";
+    ctx.lineWidth = body.width*body.height;
+    ctx.moveTo(1, 1);
+    ctx.lin
+    for (let iii = 0; iii < body.history.length; iii++) {
+      let el = body.history[iii];
+
+      ctx.beginPath();
+      ctx.lineCap = "round";
+      ctx.strokeStyle = el.color;
+      ctx.lineWidth = el.width;
+      ctx.moveTo(el.from.x, el.from.y);
+      ctx.lineTo(el.to.x, el.to.y);
+      ctx.stroke();
+    }
+    
+    while (true)
+    {
+      path = __dirname + "/public/cdn/" + uuidv4() + ".png";
+      if (!fs.existsSync(path))
+      {
+        break;
+      }
+    }
+    res.send("https://sketchel.art/cdn/" + path.split("/public/cdn/")[1]);
+    let base = canvas.toDataURL()
+    var base64Data = base.replace(/^data:image\/png;base64,/, "");
+
+    require("fs").writeFile(path, base64Data, 'base64', function(err) {
+      console.log(err);
+    });
+  } catch (err) {
+    let id = Sentry.captureException(err);
+    res.send("There was an error with your request. Reference error ID " + id + " with support");
+  }
+}) */
+
 app.post('/api/post', (req, res) => {
   
   try {
@@ -164,7 +225,6 @@ app.post('/api/post', (req, res) => {
     ctx.lineCap = "round";
     ctx.strokeStyle = "#ffffff";
     ctx.lineWidth = body.width*body.height;
-    res.set("brushSize", body.width*body.height);
     ctx.moveTo(1, 1);
     ctx.lineTo(body.width, body.height);
     for (let iii = 0; iii < body.history.length; iii++) {
@@ -178,8 +238,8 @@ app.post('/api/post', (req, res) => {
       ctx.lineTo(el.to.x, el.to.y);
       ctx.stroke();
     }
-    let id = "";
-    let path = "";
+    let id;
+    let path;
     while (true)
     {
       id = uuidv4()
@@ -189,21 +249,18 @@ app.post('/api/post', (req, res) => {
         break;
       }
     }
-    let image = "https://sketchel.art/cdn/" + path.split("/public/cdn/")[1]
+    let image = "https://sketchel.art/cdn/" + path.split("/public/cdn/")[1];
     let base = canvas.toDataURL()
     var base64Data = base.replace(/^data:image\/png;base64,/, "");
 
+    fs.writeFile(path, base64Data, 'base64');
     posts.set(id, {"image_url": image, "author": user, "likes": 0, "dislikes": 0, "comments": 0, "comments_list": []})
     users.add(`${user}.posts`, 1)
     users.push(`${user}.posts_list`, id)
     res.send(`${id}`)
-
-    require("fs").writeFile(path, base64Data, 'base64', function(err) {
-      console.log(err);
-    });
   } catch (err) {
     let id = Sentry.captureException(err);
-    res.send("There was an error with your request. Reference error ID " + id + " with support");
+    console.log("There was an error with your request. Reference error ID " + id + " with support (" +  err + ")");
   }
 })
 
@@ -215,30 +272,28 @@ app.get('/post/:postID', (req, res) => {
     res.redirect('/postnotfoundlol')
   }
   var likes = posts.get(`${post}.likes`)
+  var author = posts.get(`${post}.author`)
   var comments = posts.get(`${post}.comments`)
   var comments_list = posts.get(`${post}.comments_list`)
   var dislikes = posts.get(`${post}.dislikes`)
   var image_url = posts.get(`${post}.image_url`)
   var rating = dislikes + likes
   if (!user) {
-    res.render('post', { quote: quote, image_url: image_url, likes: likes, dislikes: dislikes, comments: comments, comments_list: comments_list, rating: rating })
+    res.render('post', { quote: quote, image_url: image_url, author: author, likes: likes, dislikes: dislikes, comments: comments, comments_list: comments_list, rating: rating })
   } else {
-    res.render('post', { quote: quote, image_url: image_url, username: user, authorized: "true", likes: likes, dislikes: dislikes, comments: comments, comments_list: comments_list, rating: rating })
+    res.render('post', { quote: quote, image_url: image_url, author: author, username: user, authorized: "true", likes: likes, dislikes: dislikes, comments: comments, comments_list: comments_list, rating: rating })
   }
 })
 
 
 // Load pages
-app.get('/beta/canvas', (req, res) => {
-  res.render('canvas')
-})
 app.get('/beta/create', (req, res) => {
   var quote = getQuote()
   var user = getUser(req.cookies) 
   if (!user) {
-    res.render('create', { quote: quote })
+    res.render('canvas', { quote: quote })
   } else {
-    res.render('create', { quote: quote, username: user, authorized: "true" })
+    res.render('canvas', { quote: quote, username: user, authorized: "true" })
   }
 })
 
@@ -474,7 +529,7 @@ app.get('/profile/:userId', (req, res) => {
     res.render('user-profile', { quote: quote,
       user: req.params.userId, 
       username: user, 
-      bio: bio, 
+      bio: markdown.parse(xss(bio)), 
       avatar: avatar, 
       rank: rank, 
       followers: followers, 
@@ -574,7 +629,7 @@ app.get('/profile', (req, res) => {
     if (dark) {
       res.render('profile', { quote: quote, 
         username: username, 
-        bio: bio, 
+        bio: markdown.parse(xss(bio)), 
         avatar: avatar, 
         rank: rank, 
         followers: followers, 
@@ -589,7 +644,7 @@ app.get('/profile', (req, res) => {
     } else {
       res.render('profile', { quote: quote, 
         username: username, 
-        bio: bio, 
+        bio: markdown.parse(xss(bio)),  
         avatar: avatar, 
         rank: rank, 
         followers: followers, 
@@ -619,7 +674,7 @@ app.get('/beta/profile', (req, res) => {
     if (dark) {
       res.render('profile-beta', { quote: quote, 
         username: username, 
-        bio: bio, 
+        bio: markdown.parse(xss(bio)),  
         avatar: avatar, 
         rank: rank, 
         followers: followers, 
@@ -631,7 +686,7 @@ app.get('/beta/profile', (req, res) => {
     } else {
       res.render('profile-beta', { quote: quote, 
         username: username, 
-        bio: bio, 
+        bio: markdown.parse(xss(bio)), 
         avatar: avatar, 
         rank: rank, 
         followers: followers, 

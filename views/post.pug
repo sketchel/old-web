@@ -8,5 +8,15 @@ html
     if !authorized
         include includes/navbar-1.pug
     
-    figure.image.is-16by9
-        iframe(class="has-ratio", width="640", height="360", src=image_url, frameborder="0")
+    div.container.is-fluid
+        div.box
+            div(align="center")
+                figure.image
+                    iframe(class="has-ratio", width="1039", height="483", src=image_url, frameborder="0")
+                .media
+                    .media-left
+                        figure.image.is-64x64
+                            img(src="https://sketchel.art/api/v1/get-avatar/" + author)
+                    .media-content
+                        p.title.is-4 #{author}
+                        p.subtitle.is-6 Joined at <strong>#{joindate}</strong>
