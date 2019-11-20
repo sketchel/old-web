@@ -13,13 +13,16 @@ const http = require('http');
 const fs = require('fs');
 const open = require('opn');
 const app = express();
+const markdown = require('markdown')
+const xss = require('xss')
 const request = require('request');
 const { createCanvas, loadImage } = require('canvas')
-const helmet = require('helmet');
-
-require('dotenv').config()
+var base64ToImage = require('base64-to-image')
+const Sentry = require('@sentry/node')
+Sentry.init({ dsn: 'https://8ae48a0f7a4645e0b72042f5cb3f85fc@sentry.io/1826211' })
 
 var users = new db.table('users')
+var posts = new db.table('posts')
 
 var discord = {
   "oauth": {
@@ -30,7 +33,7 @@ var discord = {
     'identify',
     'email'
   "bot": {
-    "token": process.env.TOKEN
+    "token": "NjQ1MzY2NDU0NjE4ODE2NTIy.XdBkSQ.xl9NqXwKhTtToT8uFd_G2zHTdSg"
   },
   "scopes": [
     "identify",
@@ -41,8 +44,8 @@ discord.scope = () => {
   return discord.scopes.join("%20");
 }
 const grecaptcha = {
-  "site": process.env.RECAPTCHA_SITE,
-  "secret": process.env.RECAPTCHA_SECRET
+  "site": "6LctSsMUAAAAADBNNLlYhZ-i7coSpp4iOQyYOMpv",
+  "secret": "6LctSsMUAAAAAAIcCz8EeKT-RnrNAAFpyoQBuhuP"
 };
 
 // Anti-Deus Ex Machina
@@ -52,9 +55,8 @@ const grecaptcha = {
 app.set('view engine', 'pug')
 
 // Change middleware
-app.use(helmet())
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json({limit: '50mb'}))
+app.use(bodyParser.urlencoded({ extended: false, limit: '50mb'}))
 app.use(cookieParser())
 app.use(express.static(__dirname + '/public'))
 
@@ -130,6 +132,10 @@ function queryParam(str) {
 function webPush(user) {
 
 }
+function postToSketchel(post, cookies) {
+  
+}
+
 
 // Sitemap for better search results
 app.get('/sitemap.xml', (req, res) => {
@@ -149,43 +155,141 @@ app.get('/maps', (req, res) => {
 
 
 // Public API
-app.post('/api/render', (req, res) => {
-  const canvas = createCanvas(req.body.width, req.body.height);
-  const ctx = canvas.getContext('2d');
 
-  req.body.history.forEach((elem) => {
-    ctx.beginPath();
-    ctx.lineCap = "round";
-    ctx.strokeStyle = elem.color;
-    ctx.lineWidth = elem.width;
-    ctx.moveTo(elem.from.x, elem.from.y);
-    ctx.lineTo(elem.to.x, elem.to.y);
-    ctx.stroke();
-  });
-  res.send(canvas.toDataURL());
-})
 
 app.get('/api/v1/get-user/:userId', (req, res) => {
-  if (!req.params.userId) {
-    res.status(400)
-    return
-  } else {
-    var user = users.get(req.params.userId)
-    if (!user) {
-      res.status(404)
-    } else {
-      user = req.params.userId
-      var bio = users.get(`${user}.bio`)
-      var avatar = users.get(`${user}.avatar`)
-      var rank = users.get(`${user}.rank`)
-      var following = users.get(`${user}.following`)
-      var followers = users.get(`${user}.followers`)
-      var joindate = users.get(`${user}.joindate`)
-      res.json({ bio:bio, avatar:avatar, rank:rank, following:following, followers:followers, joindate:joindate })
-      res.status(200)
+  if(!req.params.userId || !users.get(`${req.params.userId}`)) return res.status(404).json({ error: 'You didn\'t provide a userId or that userId didn\'t exist.' })
+  let bio = users.get(`${req.params.userId}.bio`),
+    avatar = users.get(`${req.params.userId}.avatar`),
+    rank = users.get(`${req.params.userId}.rank`),
+    following = users.get(`${req.params.userId}.following`),
+    followers = users.get(`${req.params.userId}.followers`),
+    joindate = users.get(`${req.params.userId}.joindate`),
+    follow_status = users.get(`${req.params.userId}.followers_list`).includes(user),
+    following_list = users.get(`${req.params.userId}.following_list`),
+    follower_list = users.get(`${req.params.userId}.followers_list`)
+  return res.status(200).json({ bio: bio, avatar: avatar, rank: rank, following: following, followers: followers, join_date: joindate, follow_status: follow_status, following: following_list, followers: follower_list })
+})
+
+/**
+app.post('/api/render', (req, res) => {
+  try {
+    let body = JSON.parse(Object.keys(req.body)[0]);
+    let canvas = createCanvas(body.width, body.height);
+    let ctx = canvas.getContext('2d');
+    ctx.beginPath();
+    ctx.lineCap = "round";
+    ctx.strokeStyle = "#ffffff";
+    ctx.lineWidth = body.width*body.height;
+    ctx.moveTo(1, 1);
+    ctx.lin
+    for (let iii = 0; iii < body.history.length; iii++) {
+      let el = body.history[iii];
+
+      ctx.beginPath();
+      ctx.lineCap = "round";
+      ctx.strokeStyle = el.color;
+      ctx.lineWidth = el.width;
+      ctx.moveTo(el.from.x, el.from.y);
+      ctx.lineTo(el.to.x, el.to.y);
+      ctx.stroke();
     }
+    
+    while (true)
+    {
+      path = __dirname + "/public/cdn/" + uuidv4() + ".png";
+      if (!fs.existsSync(path))
+      {
+        break;
+      }
+    }
+    res.send("https://sketchel.art/cdn/" + path.split("/public/cdn/")[1]);
+    let base = canvas.toDataURL()
+    var base64Data = base.replace(/^data:image\/png;base64,/, "");
+
+    require("fs").writeFile(path, base64Data, 'base64', function(err) {
+      console.log(err);
+    });
+  } catch (err) {
+    let id = Sentry.captureException(err);
+    res.send("There was an error with your request. Reference error ID " + id + " with support");
   }
-});
+}) */
+
+app.post('/api/post', (req, res) => {
+  
+  try {
+    let user = getUser(req.cookies)
+    if (!user) {
+      throw "User isn't logged in."
+    }
+    let body = JSON.parse(Object.keys(req.body)[0]);
+    let canvas = createCanvas(body.width, body.height);
+    let ctx = canvas.getContext('2d');
+    ctx.beginPath();
+    ctx.lineCap = "round";
+    ctx.strokeStyle = "#ffffff";
+    ctx.lineWidth = body.width*body.height;
+    ctx.moveTo(1, 1);
+    ctx.lineTo(body.width, body.height);
+    for (let iii = 0; iii < body.history.length; iii++) {
+      let el = body.history[iii];
+
+      ctx.beginPath();
+      ctx.lineCap = "round";
+      ctx.strokeStyle = el.color;
+      ctx.lineWidth = el.width;
+      ctx.moveTo(el.from.x, el.from.y);
+      ctx.lineTo(el.to.x, el.to.y);
+      ctx.stroke();
+    }
+    let id;
+    let path;
+    while (true)
+    {
+      id = uuidv4()
+      path = __dirname + "/public/cdn/" + id + ".png";
+      if (!fs.existsSync(path))
+      {
+        break;
+      }
+    }
+    let image = "https://sketchel.art/cdn/" + path.split("/public/cdn/")[1];
+    let base = canvas.toDataURL()
+    var base64Data = base.replace(/^data:image\/png;base64,/, "");
+
+    fs.writeFile(path, base64Data, 'base64');
+    posts.set(id, {"image_url": image, "author": user, "likes": 0, "dislikes": 0, "comments": 0, "comments_list": []})
+    users.add(`${user}.posts`, 1)
+    users.push(`${user}.posts_list`, id)
+    res.send(`${id}`)
+  } catch (err) {
+    let id = Sentry.captureException(err);
+    console.log("There was an error with your request. Reference error ID " + id + " with support (" +  err + ")");
+  }
+})
+
+app.get('/post/:postID', (req, res) => {
+  var quote = getQuote()
+  var user = getUser(req.cookies) 
+  var post = req.params.postID;
+  if (!posts.get(`${post}`)) {
+    res.redirect('/postnotfoundlol')
+  }
+  var likes = posts.get(`${post}.likes`)
+  var author = posts.get(`${post}.author`)
+  var comments = posts.get(`${post}.comments`)
+  var comments_list = posts.get(`${post}.comments_list`)
+  var dislikes = posts.get(`${post}.dislikes`)
+  var image_url = posts.get(`${post}.image_url`)
+  var rating = dislikes + likes
+  if (!user) {
+    res.render('post', { quote: quote, image_url: image_url, author: author, likes: likes, dislikes: dislikes, comments: comments, comments_list: comments_list, rating: rating })
+  } else {
+    res.render('post', { quote: quote, image_url: image_url, author: author, username: user, authorized: "true", likes: likes, dislikes: dislikes, comments: comments, comments_list: comments_list, rating: rating })
+  }
+})
+
 
 // Load pages
 app.get('/beta/create', (req, res) => {
@@ -400,7 +504,7 @@ app.get('/profile/:userId', (req, res) => {
       res.render('user-profile', { quote: quote, 
         user: req.params.userId, 
         username: user, 
-        bio: bio, 
+        bio: markdown.parse(xss(bio)), 
         avatar: avatar, 
         rank: rank, 
         followers: followers, 
@@ -415,7 +519,7 @@ app.get('/profile/:userId', (req, res) => {
       res.render('user-profile', { quote: quote, 
         user: req.params.userId, 
         username: user, 
-        bio: bio, 
+        bio: markdown.parse(xss(bio)),  
         avatar: avatar, 
         rank: rank, 
         followers: followers, 
@@ -430,7 +534,7 @@ app.get('/profile/:userId', (req, res) => {
     res.render('user-profile', { quote: quote,
       user: req.params.userId, 
       username: user, 
-      bio: bio, 
+      bio: markdown.parse(xss(bio)), 
       avatar: avatar, 
       rank: rank, 
       followers: followers, 
@@ -530,7 +634,7 @@ app.get('/profile', (req, res) => {
     if (dark) {
       res.render('profile', { quote: quote, 
         username: username, 
-        bio: bio, 
+        bio: markdown.parse(xss(bio)), 
         avatar: avatar, 
         rank: rank, 
         followers: followers, 
@@ -545,7 +649,7 @@ app.get('/profile', (req, res) => {
     } else {
       res.render('profile', { quote: quote, 
         username: username, 
-        bio: bio, 
+        bio: markdown.parse(xss(bio)),  
         avatar: avatar, 
         rank: rank, 
         followers: followers, 
@@ -575,7 +679,7 @@ app.get('/beta/profile', (req, res) => {
     if (dark) {
       res.render('profile-beta', { quote: quote, 
         username: username, 
-        bio: bio, 
+        bio: markdown.parse(xss(bio)),  
         avatar: avatar, 
         rank: rank, 
         followers: followers, 
@@ -587,7 +691,7 @@ app.get('/beta/profile', (req, res) => {
     } else {
       res.render('profile-beta', { quote: quote, 
         username: username, 
-        bio: bio, 
+        bio: markdown.parse(xss(bio)), 
         avatar: avatar, 
         rank: rank, 
         followers: followers, 

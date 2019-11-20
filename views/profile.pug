@@ -106,12 +106,7 @@ html
                                     figure.image.is-64x64
                                         img(src=avatar, style="border-radius: 50px;box-shadow: 0 0 2px black;")
                                 .media-content
-                                    if rank = "owner"
-                                        span.title #{username}&nbsp;
-                                        span.title.is-6.icon.has-text-warning
-                                            i.fas.fa-star
-                                    else 
-                                        p.title.is-4 #{username}
+                                    p.title.is-4 #{username}
                                     p.subtitle.is-6 Joined at <strong>#{joindate}</strong>
                             div.content.has-text-centered
                                 p(id="bio") #{bio}
