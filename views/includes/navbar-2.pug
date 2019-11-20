@@ -1,6 +1,6 @@
 script(src="/js/navbar.js", crossorigin="anonymous")
 nav.navbar.is-spaced(role="navigation", aria-label="main navigation")
-    div.navbar-brand
+    a.navbar-brand(href="/")
         figure(class="image is-48x48")
             img(class="image is-48x48", src="/assets/sketchel-small.png") 
         a.navbar-burger(role="button", data-target="navbar", aria-label="menu", aria-expanded="false")
@@ -9,21 +9,19 @@ nav.navbar.is-spaced(role="navigation", aria-label="main navigation")
             span(aria-hidden="true")
     div.navbar-menu(id="navbar")
         div.navbar-start
-            a.navbar-item(href="/") <i class="fas fa-home"></i>&nbsp;Home
             a.navbar-item(href="/feed") <i class="fas fa-rss"></i>&nbsp;Feed
-            a.navbar-item(href="/hot") <i class="fas fa-fire"></i>&nbsp;Popular 
+            a.navbar-item(href="/hot") <i class="fas fa-fire"></i>&nbsp;Hot
             
             
         div.navbar-end
-            
-            a.navbar-item
+            a.navbar-button(style="margin-right: 6px")
                 div.field
                     p.control.has-icons-left
                         input.input.is-rounded(type="text", placeholder="Search")   
                         span.icon.is-small.is-left
                             i.fas.fa-search         
-            a.navbar-item(href="/notifications") <i class="fas fa-bell"></i>&nbsp;Notifications
-            a.navbar-item(href="/create") <i class="fas fa-paint-brush"></i>&nbsp;Create
+            a.navbar-item(onclick="sketchelapp.panels.notifications.open()") <i class="fas fa-bell"></i>
+            a.navbar-item(href="/create") <i class="fas fa-paint-brush"></i>
             div.navbar-item.has-dropdown.is-hoverable
 
                 a.navbar-link #{username}

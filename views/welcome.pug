@@ -2,66 +2,74 @@ doctype html
 html 
   include includes/head.pug
   body 
-    if authorized
-        include includes/navbar-2.pug
-    if !authorized
-        include includes/navbar-1.pug
 
     section.hero.is-primary.is-bold
-      div.hero-body
-        div.container.is-fluid
-            h1.title Welcome to Sketchel! <i class="em em-tada" aria-role="presentation" aria-label="PARTY POPPER"></i>
-            h2.subtitle Here's what we got to offer!
-            a.button.is-white(href="/") Wanna go home?
+      .container
+        .hero-head
+            if authorized
+                include includes/navbar-2.pug
+            if !authorized
+                include includes/navbar-1.pug
+        div.hero-body
+            div.container
+                h1.title Welcome to Sketchel! <i class="em em-tada" aria-role="presentation" aria-label="PARTY POPPER"></i>
+                h2.subtitle Here's what we got to offer!
+                        div.field
+                            p.control
+                                a(href="/") 
+                                    button.button.is-primary.is-rounded Wanna go home?
 
     br                        
-    div.container.is-fluid
-        div.box  
-            section.section.has-text-centered
-                div.container.is-fluid 
-                    div(class="columns is-multiline")
-                        div(class="column is-one-third")
-                            article(class="notification has-background-white media")
-                                figure(class="media-left")
-                                    span(class="icon has-text-danger")
-                                        i(class="fas fa-gavel fa-2x")
-                                div(class="media-content")
-                                    h1.title.is-size-5 Moderation
-                                    p.subtitle.is-size-5 Keep bad users out of your posts using easy to use advanced moderation tools.
-                        div(class="column is-one-third")
-                            article(class="notification has-background-white media")
-                                figure(class="media-left")
-                                    span(class="icon has-text-info")
-                                        i(class="has-text-info fas fa-cog fa-2x")
-                                div(class="media-content")
-                                    h1.title.is-size-5 Advanced Development
-                                    p.subtitle.is-size-5 Sketchel uses modern libraries/resources such as <a href="https://expressjs.org">Express</a> and <a href="https://pugjs.org">Pug</a> to make sure the website looks sleek and modern.
-                        div(class="column is-one-third")
-                            article(class="notification has-background-white media")
-                                figure(class="media-left")
-                                    span(class="icon has-text-primary")
-                                        i(class="has-text-primary fab fa-discord fa-2x")
-                                div(class="media-content")
-                                    h1.title.is-size-5 Discord Support
-                                    p.subtitle.is-size-5 Have you heard? Sketchel will have discord support, this will include rank-sync <a href="https://discord.gg/sG7KSbW">in the server</a> and having discord in your profile card, many more features will be disclosed later.
-                        div(class="column is-one-third")
-                            article(class="notification has-background-white media")
-                                figure(class="media-left")
-                                    span(class="icon has-text-warning")
-                                        i(class="has-text-warning fas fa-paint-brush fa-2x")
-                                div(class="media-content")
-                                    h1.title.is-size-5 Advanced Canvas
-                                    p.subtitle.is-size-5 Sketchel will have a modern canvas using the best resources that will save for you to continue your work later, being the most useful to you.
-                        div(class="column is-one-third")
-                            article(class="notification has-background-white media")
-                                figure(class="media-left")
-                                    span(class="icon has-text-success")
-                                        i(class="has-text-success fas fa-gavel fa-2x")
-                                div(class="media-content")
-                                    h1.title.is-size-5 Moderation v2
-                                    p.subtitle.is-size-5 If the moderation fails, you may report your issue to the moderation team.
+    div.container
+        section.section.has-text-centered
+            div.container
+                div(class="columns is-multiline")
+                    div(class="column is-one-third")
+                        article(class="notification has-background-white media")
+                            figure(class="media-left")
+                                span(class="icon has-text-danger")
+                                    i(class="fas fa-gavel fa-2x")
+                            div(class="media-content")
+                                h1.title.is-size-5 Moderation
+                                p.subtitle.is-size-5 Keep bad users out of your posts using easy to use advanced moderation tools.
+                    div(class="column is-one-third")
+                        article(class="notification has-background-white media")
+                            figure(class="media-left")
+                                span(class="icon has-text-info")
+                                    i(class="has-text-info fas fa-cog fa-2x")
+                            div(class="media-content")
+                                h1.title.is-size-5 Advanced Development
+                                p.subtitle.is-size-5 Sketchel uses modern libraries/resources such as <a href="https://expressjs.org">Express</a> and <a href="https://pugjs.org">Pug</a> to make sure the website looks sleek and modern.
+                    div(class="column is-one-third")
+                        article(class="notification has-background-white media")
+                            figure(class="media-left")
+                                span(class="icon has-text-primary")
+                                    i(class="has-text-primary fab fa-discord fa-2x")
+                            div(class="media-content")
+                                h1.title.is-size-5 Discord Support
+                                p.subtitle.is-size-5 Have you heard? Sketchel will have discord support, this will include rank-sync <a href="https://discord.gg/sG7KSbW">in the server</a> and having discord in your profile card, many more features will be disclosed later.
+                    div(class="column is-one-third")
+                        article(class="notification has-background-white media")
+                            figure(class="media-left")
+                                span(class="icon has-text-warning")
+                                    i(class="has-text-warning fas fa-paint-brush fa-2x")
+                            div(class="media-content")
+                                h1.title.is-size-5 Advanced Canvas
+                                p.subtitle.is-size-5 Sketchel will have a modern canvas using the best resources that will save for you to continue your work later, being the most useful to you.
+                    div(class="column is-one-third")
+                        article(class="notification has-background-white media")
+                            figure(class="media-left")
+                                span(class="icon has-text-success")
+                                    i(class="has-text-success fas fa-gavel fa-2x")
+                            div(class="media-content")
+                                h1.title.is-size-5 Moderation v2
+                                p.subtitle.is-size-5 If the moderation fails, you may report your issue to the moderation team.
                                                                                                                       
 
 
     br
-    include includes/footer.pug     
+    footer.footer.has-text-centered(style="background-color: white")
+        div.container
+            p <strong>Sketchel</strong> © <strong>2019</strong>, made with <a href="https://bulma.io">Bulma</a>, <a href="https://expressjs.com/">Express</a> and <a href="https://pugjs.com/">Pug</a> & more libraries, and also <span class="icon has-text-danger"><i class="fas fa-heart"></i></span>.
+            p <a href="/rules">Rules</a> | <a href="/terms">Terms of Service</a> | <a href="/credits">Credits</a>    
+            p <strong>Quote:</strong> #{quote}    
