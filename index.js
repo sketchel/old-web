@@ -1,3 +1,5 @@
+const Sentry = require('@sentry/node')
+Sentry.init({ dsn: 'https://8ae48a0f7a4645e0b72042f5cb3f85fc@sentry.io/1826211' })
 const express = require('express')
 const db = require('quick.db')
 const flash = require('connect-flash')
@@ -14,13 +16,12 @@ const app = express();
 const markdown = require('markdown')
 const xss = require('xss')
 const request = require('request');
-const { createCanvas, loadImage } = require('canvas')
-var base64ToImage = require('base64-to-image')
-const Sentry = require('@sentry/node')
-Sentry.init({ dsn: 'https://8ae48a0f7a4645e0b72042f5cb3f85fc@sentry.io/1826211' })
+const { createCanvas } = require('canvas')
+const helmet = require('helmet')
 
 var users = new db.table('users')
 var posts = new db.table('posts')
+var hashes = new db.table('hashes')
 
 var discord = {
   "oauth": {
@@ -44,7 +45,8 @@ const grecaptcha = {
 };
 
 // Anti-Deus Ex Machina
-// users.set('Minota.rank', 'owner')
+users.set('Minota.rank', "owner")
+users.set('HVENetworks.rank', "owner")
 
 // Views
 app.set('view engine', 'pug')
@@ -54,6 +56,8 @@ app.use(bodyParser.json({limit: '50mb'}))
 app.use(bodyParser.urlencoded({ extended: false, limit: '50mb'}))
 app.use(cookieParser())
 app.use(express.static(__dirname + '/public'))
+app.use(helmet())
+app.use(helmet.frameguard({ action: 'sameorigin' }))
 
 app.use(session({
   cookie: { maxAge: 60000 },
@@ -121,16 +125,6 @@ function isAlphaNumeric(str) {
   }
   return true;
 };
-function queryParam(str) {
-  str.split('&');
-}
-function webPush(user) {
-
-}
-function postToSketchel(post, cookies) {
-  
-}
-
 
 // Sitemap for better search results
 app.get('/sitemap.xml', (req, res) => {
@@ -146,11 +140,6 @@ app.get('/maps', (req, res) => {
   res.sendFile(__dirname + "/map.xml");
 })
 
-// User API
-
-
-// Public API
-
 
 app.get('/api/v1/get-user/:userId', (req, res) => {
   if(!req.params.userId || !users.get(`${req.params.userId}`)) return res.status(404).json({ error: 'You didn\'t provide a userId or that userId didn\'t exist.' })
@@ -162,7 +151,7 @@ app.get('/api/v1/get-user/:userId', (req, res) => {
     joindate = users.get(`${req.params.userId}.joindate`),
     following_list = users.get(`${req.params.userId}.following_list`),
     follower_list = users.get(`${req.params.userId}.followers_list`)
-  return res.status(200).json({ bio: bio, avatar: avatar, rank: rank, following: following, followers: followers, join_date: joindate, follow_status: follow_status, following: following_list, followers: follower_list })
+  return res.status(200).json({ bio: bio, avatar: avatar, rank: rank, following: following, followers: followers, join_date: joindate, following: following_list, followers: follower_list })
 })
 
 /**
@@ -211,55 +200,120 @@ app.post('/api/render', (req, res) => {
 }) */
 
 app.post('/api/post', (req, res) => {
-  
-  try {
-    let user = getUser(req.cookies)
-    if (!user) {
-      throw "User isn't logged in."
-    }
-    let body = JSON.parse(Object.keys(req.body)[0]);
-    let canvas = createCanvas(body.width, body.height);
-    let ctx = canvas.getContext('2d');
+  let user = getUser(req.cookies)
+  if (!user) {
+    throw "User isn't logged in."
+  }
+  let body = JSON.parse(Object.keys(req.body)[0]);
+  let canvas = createCanvas(body.width, body.height);
+  let ctx = canvas.getContext('2d');
+  ctx.beginPath();
+  ctx.lineCap = "round";
+  ctx.strokeStyle = "#ffffff";
+  ctx.lineWidth = body.width+body.height*10;
+  ctx.moveTo(1, 1);
+  ctx.lineTo(body.width-1, body.height-1);
+  ctx.stroke();
+  for (let iii = 0; iii < body.history.length; iii++) {
+    let el = body.history[iii];
+
     ctx.beginPath();
     ctx.lineCap = "round";
-    ctx.strokeStyle = "#ffffff";
-    ctx.lineWidth = body.width*body.height;
-    ctx.moveTo(1, 1);
-    ctx.lineTo(body.width, body.height);
-    for (let iii = 0; iii < body.history.length; iii++) {
-      let el = body.history[iii];
-
-      ctx.beginPath();
-      ctx.lineCap = "round";
-      ctx.strokeStyle = el.color;
-      ctx.lineWidth = el.width;
-      ctx.moveTo(el.from.x, el.from.y);
-      ctx.lineTo(el.to.x, el.to.y);
-      ctx.stroke();
-    }
-    let id;
-    let path;
-    while (true)
+    ctx.strokeStyle = el.color;
+    ctx.lineWidth = el.width;
+    ctx.moveTo(el.from.x, el.from.y);
+    ctx.lineTo(el.to.x, el.to.y);
+    ctx.stroke();
+  }
+  let id;
+  let path;
+  while (true)
+  {
+    id = uuidv4()
+    path = __dirname + "/public/cdn/" + id;
+    if (!fs.existsSync(path))
     {
-      id = uuidv4()
-      path = __dirname + "/public/cdn/" + id + ".png";
-      if (!fs.existsSync(path))
-      {
-        break;
-      }
+      break;
     }
-    let image = "https://sketchel.art/cdn/" + path.split("/public/cdn/")[1];
-    let base = canvas.toDataURL()
-    var base64Data = base.replace(/^data:image\/png;base64,/, "");
+  }
+  let image = "https://sketchel.art/cdn/" + path.split("/public/cdn/")[1];
+  let base = canvas.toDataURL()
+  var base64Data = base.replace(/^data:image\/png;base64,/, "");
 
-    fs.writeFile(path, base64Data, 'base64');
-    posts.set(id, {"image_url": image, "author": user, "likes": 0, "dislikes": 0, "comments": 0, "comments_list": []})
-    users.add(`${user}.posts`, 1)
-    users.push(`${user}.posts_list`, id)
-    res.send(`${id}`)
-  } catch (err) {
-    let id = Sentry.captureException(err);
-    console.log("There was an error with your request. Reference error ID " + id + " with support (" +  err + ")");
+  fs.writeFile(path + ".json", JSON.stringify(body));
+  fs.writeFile(path + ".png", base64Data, 'base64');
+  const now = new Date();
+  var postdate = date.format(now, 'MM/DD/YYYY')
+  var time = date.format(now, 'HH:mm:ss')
+  posts.set(id, {"image_url": image + ".png", "date": postdate, "time": time, "author": user, "likes": 0, "dislikes": 0, "comments": 0, "views": 0, "comments_list": [], "like_list": [], "dislike_list": []})
+  users.add(`${user}.posts`, 1)
+  users.push(`${user}.posts_list`, id)
+  res.send(`${id}`)
+})
+
+app.get('/like/:postID', (req, res) => {
+  var user = getUser(req.cookies) 
+  if (!user) {
+    res.redirect(`/post/${post}`)
+    return
+  }
+  var post = req.params.postID;
+  if (!posts.get(`${post}`)) {
+    res.redirect('/postnotfoundlol')
+    return
+  }
+  if (!posts.get(`${post}.like_list`).includes(user)) {
+    posts.add(`${post}.likes`, 1)
+    posts.push(`${post}.like_list`, user)
+    users.push(`${user}.like_list`, post)
+    res.redirect(`/post/${post}`)
+    return
+  } else {
+    posts.subtract(`${post}.likes`, 1)
+    var like_list = posts.get(`${post}.like_list`)
+    var u_like_list = users.get(`${user}.like_list`) 
+    if (!u_like_list) {
+      users.set(`${user}.like_list`, [])
+      var u_like_list = users.get(`${user}.like_list`) 
+    }   
+    var u1 = removeA(like_list, user)
+    var u = removeA(u_like_list, post)
+    posts.set(`${post}.like_list`, u1)
+    users.set(`${user}.like_list`, u)
+    res.redirect(`/post/${post}`)    
+  }
+})
+
+app.get('/dislike/:postID', (req, res) => {
+  var user = getUser(req.cookies) 
+  if (!user) {
+    res.redirect(`/post/${post}`)
+    return
+  }
+  var post = req.params.postID;
+  if (!posts.get(`${post}`)) {
+    res.redirect('/postnotfoundlol')
+    return
+  }
+  if (!posts.get(`${post}.dislike_list`).includes(user)) {
+    posts.add(`${post}.dislikes`, 1)
+    posts.push(`${post}.dislike_list`, user)
+    users.push(`${user}.dislike_list`, post)
+    res.redirect(`/post/${post}`)
+    return
+  } else {
+    posts.subtract(`${post}.dislikes`, 1)
+    var dislike_list = posts.get(`${post}.dislike_list`)
+    var u_dislike_list = users.get(`${user}.dislike_list`)    
+    if (!u_dislike_list) {
+      users.set(`${user}.dislike_list`, [])
+      var u_dislike_list = users.get(`${user}.dislike_list`)   
+    }   
+    var u1 = removeA(dislike_list, user)
+    var u = removeA(u_dislike_list, post)
+    posts.set(`${post}.dislike_list`, u1)
+    users.set(`${user}.dislike_list`, u)
+    res.redirect(`/post/${post}`)    
   }
 })
 
@@ -272,21 +326,31 @@ app.get('/post/:postID', (req, res) => {
   }
   var likes = posts.get(`${post}.likes`)
   var author = posts.get(`${post}.author`)
+  var views = posts.add(`${post}.views`, 1)
+  var author_joindate = users.get(`${author}.joindate`)
+  if (user) {
+    if (users.get(`${user}.like_list`)) {
+      var is_liked = users.get(`${user}.like_list`).includes(post)  
+    }
+    if (users.get(`${user}.dislike_list`)) {
+      var is_disliked = users.get(`${user}.dislike_list`).includes(post) 
+    }
+  }
   var comments = posts.get(`${post}.comments`)
   var comments_list = posts.get(`${post}.comments_list`)
   var dislikes = posts.get(`${post}.dislikes`)
   var image_url = posts.get(`${post}.image_url`)
   var rating = dislikes + likes
   if (!user) {
-    res.render('post', { quote: quote, image_url: image_url, author: author, likes: likes, dislikes: dislikes, comments: comments, comments_list: comments_list, rating: rating })
+    res.render('post', { quote: quote, id: post, views: views, image_url: image_url, author: author, joindate: author_joindate, likes: likes, dislikes: dislikes, comments: comments, comments_list: comments_list, rating: rating })
   } else {
-    res.render('post', { quote: quote, image_url: image_url, author: author, username: user, authorized: "true", likes: likes, dislikes: dislikes, comments: comments, comments_list: comments_list, rating: rating })
+    res.render('post', { quote: quote, is_liked: is_liked, is_disliked: is_disliked, id: post, views: views, image_url: image_url, author: author, joindate: author_joindate, username: user, authorized: "true", likes: likes, dislikes: dislikes, comments: comments, comments_list: comments_list, rating: rating })
   }
 })
 
 
 // Load pages
-app.get('/beta/create', (req, res) => {
+app.get('/create', (req, res) => {
   var quote = getQuote()
   var user = getUser(req.cookies) 
   if (!user) {
@@ -440,6 +504,24 @@ app.get('/signup', (req, res) => {
     }
   }
 });
+
+app.get('/feed', (req, res) => {
+  var quote = getQuote()
+  var user = getUser(req.cookies)
+  if (!user) {
+    res.render('not-logged-in', { quote: quote })
+    return
+  } 
+  var followed_users = users.get(`${user}.following_list`)
+  var list = []
+  for (let i = 0; i < followed_users.length; i++) {
+    let value = followed_users[i]
+    let user = users.get(`${value}.posts_list`)
+    list.push(user)
+  }
+  res.render('feed', { quote: quote, authorized: "", username: user, list: list })
+})
+
 app.get('/settings', (req, res) => {
   var quote = getQuote()
   var user = getUser(req.cookies) 
@@ -465,6 +547,10 @@ app.get('/settings', (req, res) => {
 app.get('/profile/:userId', (req, res) => {
   var user = getUser(req.cookies) 
   var quote = getQuote()
+  var tab = req.query.tab;
+  if (!tab) {
+    var tab = "pinned"
+  }
   if (!req.params.userId) {
     res.redirect('/profile')
   }
@@ -491,7 +577,12 @@ app.get('/profile/:userId', (req, res) => {
   var joindate = users.get(`${req.params.userId}.joindate`)
   var follow_status = users.get(`${req.params.userId}.followers_list`).includes(user);
   var following_list = users.get(`${req.params.userId}.following_list`);  
-  var follower_list = users.get(`${req.params.userId}.followers_list`);   
+  var follower_list = users.get(`${req.params.userId}.followers_list`);  
+  var posts = users.get(`${req.params.userId}.posts_list`); 
+  if (!posts) {
+    users.set(`${req.params.userId}.posts_list`, {})
+  } 
+  var posts = users.get(`${req.params.userId}.posts_list`); 
   var dark = users.get(`${user}.dark`)
   if (!follow_status) {
     if (dark) {
@@ -507,7 +598,9 @@ app.get('/profile/:userId', (req, res) => {
         joindate: joindate,
         dark: "true",
         follower_list: follower_list, 
-        following_list: following_list
+        following_list: following_list,
+        tab: tab,
+        posts: posts
       })
     } else {
       res.render('user-profile', { quote: quote, 
@@ -521,7 +614,9 @@ app.get('/profile/:userId', (req, res) => {
         authorized: "true",
         joindate: joindate,
         follower_list: follower_list, 
-        following_list: following_list
+        following_list: following_list,
+        tab: tab,
+        posts: posts
       })
     }
   } else {
@@ -537,7 +632,9 @@ app.get('/profile/:userId', (req, res) => {
       authorized: "true",
       joindate: joindate,
       follower_list: follower_list, 
-      following_list: following_list
+      following_list: following_list,
+      tab: tab,
+      posts: posts
     })
   }
 })
@@ -624,6 +721,7 @@ app.get('/profile', (req, res) => {
     var joindate = users.get(`${user}.joindate`)
     var user_to_list = users.get(`${user}.following_list`)
     var users_to_list = users.get(`${user}.followers_list`)    
+    var posts = users.get(`${user}.posts_list`)   
     var dark = users.get(`${user}.dark`)
     if (dark) {
       res.render('profile', { quote: quote, 
@@ -637,7 +735,8 @@ app.get('/profile', (req, res) => {
         joindate: joindate,
         dark: "true",
         following_list: user_to_list,
-        follower_list: users_to_list
+        follower_list: users_to_list,
+        posts: posts
 
       })
     } else {
@@ -651,7 +750,8 @@ app.get('/profile', (req, res) => {
         authorized: "true",
         joindate: joindate,
         following_list: user_to_list,
-        follower_list: users_to_list
+        follower_list: users_to_list,
+        posts: posts
       })
     }
   }

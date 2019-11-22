@@ -27,6 +27,8 @@ window.onload = () => {
         }
     });
     document.getElementsByClassName("SaveBtn")[0].addEventListener("click", (e) => {
+        document.getElementsByClassName("SaveBtn")[0].style.backgroundImage = "url(https://sketchel.art/assets/hourglass.svg)";
+        document.getElementsByClassName("SaveBtn")[0].style.backgroundSize = "contain";
         if (Sketchel.History.length > 0) {
             let postData = {
                 width: window.Sketchel.canvas.width,
@@ -34,19 +36,33 @@ window.onload = () => {
                 history: window.Sketchel.History
             };
 
+            if (window.Sketchel.isSaving) return;
+            window.Sketchel.isSaving = true;
             $.ajax({
                 type: 'POST',
                 url: 'https://sketchel.art/api/post',
                 processData: false,
                 data: JSON.stringify(postData),
-                success: function(msg){
-                    window.location(msg);
+                success: function(msg) {
+                    window.Sketchel.isSaving = false;
+                    document.getElementsByClassName("SaveBtn")[0].style.backgroundImage = "url(https://sketchel.art/assets/fontawesome/solid/upload.svg)";
+                    document.getElementsByClassName("SaveBtn")[0].style.backgroundSize = "auto";
+                    Swal.fire({
+                        title: 'Sweet!',
+                        html: 'You just uploaded your drawing!<br/><br/><div class="field has-addons" style="margin-left:10%;margin-right:10%;"><div class="control" style="width:100%"><input class="input sketchelLink" type="text" placeholder="" readonly></div><div class="control"><a class="button is-info" onclick="window.Sketchel.copyLink()">Copy</a></div></div>',
+                        imageUrl: 'https://sketchel.art/cdn/' + msg + '.png',
+                        imageAlt: 'Your uploaded drawing!',
+                    });
+                    document.getElementsByClassName("sketchelLink")[0].value = "https://sketchel.art/post/" + msg;
                 }
             });
         } else {
             alert("You might want to actually draw something before saving your drawing... Just sayin");
         }
     });
+    window.Sketchel.copyLink = () => {
+        navigator.clipboard.writeText(document.getElementsByClassName('sketchelLink')[0].value);
+    }
     document.getElementsByClassName("PencilBtn")[0].addEventListener("click", (e) => {
         window.Sketchel.canvas.style.cursor = "url(pencilCur.svg) 5 5, auto";
         window.Sketchel.pickr.applyColor();
@@ -100,7 +116,6 @@ window.onload = () => {
         var final = false;
         while (true) {
             window.Sketchel.Redo[window.Sketchel.Redo.length-1].final = false;
-            console.log(window.Sketchel.Redo[window.Sketchel.Redo.length-1]);
             window.Sketchel.History.push(window.Sketchel.Redo[window.Sketchel.Redo.length-1]);
             window.Sketchel.Redo.splice(-1,1);
             if ((!window.Sketchel.Redo[window.Sketchel.Redo.length-1]) || final)
@@ -176,8 +191,8 @@ window.onload = () => {
     window.Sketchel.canvas = document.getElementsByClassName("SketchelCanvas")[0];
     window.Sketchel.ctx = window.Sketchel.canvas.getContext("2d");
 
-    window.Sketchel.canvas.width = window.Sketchel.canvas.clientWidth - 20;
-    window.Sketchel.canvas.height = window.Sketchel.canvas.clientHeight - 20;
+    window.Sketchel.canvas.width = window.Sketchel.canvas.clientWidth;
+    window.Sketchel.canvas.height = window.Sketchel.canvas.clientHeight;
     window.Sketchel.History = [];
     window.Sketchel.Settings.Color = window.Sketchel.pickr.getColor().toHEXA().join('');
     window.Sketchel.Redo = new Array();
@@ -201,15 +216,12 @@ window.onload = () => {
     });
     window.Sketchel.canvas.onmousedown = (e) => {
         window.Sketchel.StartDraw(e);
-        console.log(e);
     }
     window.Sketchel.canvas.onmousemove = (e) => {
         window.Sketchel.ContinueDraw(e);
-        console.log(e);
     }
     window.Sketchel.canvas.onmouseup = (e) => {
         window.Sketchel.StopDraw(e);
-        console.log(e);
     }
     setTimeout(() => {
         window.Sketchel.Clear();
@@ -230,7 +242,8 @@ window.onload = () => {
         var touch = e.touches[0];
         var mouseEvent = new MouseEvent("mousemove", {
             clientX: touch.clientX,
-            clientY: touch.clientY
+            clientY: touch.clientY,
+            buttons: 1
         });
         window.Sketchel.canvas.dispatchEvent(mouseEvent);
     }, false);
@@ -244,9 +257,13 @@ window.onload = () => {
         };
     }
     window.Sketchel.StartDraw = (e) => {
+        if (e.buttons)
+        {
+            if (e.buttons == 2) return;
+        }
         if (window.Sketchel.Redo.length > 0)
             window.Sketchel.Redo = [];
-        //if (e.buttons == 1) {
+
             window.Sketchel.isDrawing = true;
             let rect = window.Sketchel.canvas.getBoundingClientRect();
             window.Sketchel.Settings.LastPos = {
@@ -278,7 +295,6 @@ window.onload = () => {
                 "x": e.x - rect.x,
                 "y": e.y - rect.y
             };
-        //}
     }
     window.Sketchel.StopDraw = (e) => {
         if (e.buttons)
@@ -292,10 +308,10 @@ window.onload = () => {
     window.Sketchel.ContinueDraw = (e) => {
         if (window.Sketchel.isDrawing) {
             let rect = window.Sketchel.canvas.getBoundingClientRect();
-            /*if (e.buttons == 0 || e.buttons == 2) {
+       	    if (e.buttons == 0 || e.buttons == 2) {
                 window.Sketchel.isDrawing = false;
-                return;
-            }*/
+		    	return;
+            }
             window.Sketchel.ctx.beginPath();
             window.Sketchel.ctx.lineCap = "round";
             window.Sketchel.ctx.fillStyle = window.Sketchel.Settings.Color;

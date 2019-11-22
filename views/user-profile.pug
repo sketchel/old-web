@@ -109,35 +109,19 @@ html
                         if !is_followed                                         
                             a.button.is-primary.is-fullwidth(href="/follow/" + user) Follow                  
                 div.column
-                    div.tabs.is-centered.is-boxed
-                        ul
-                            li.is-active
-                                a 
-                                    span.icon.is-small 
-                                        i.fas.fa-thumbtack(aria-hidden="true")
-                                    span Pinned
-                            li
-                                a 
-                                    span.icon.is-small 
-                                        i.fas.fa-clock(aria-hidden="true")
-                                    span Recent                          
-                            li
-                                a 
-                                    span.icon.is-small 
-                                        i.fas.fa-heart(aria-hidden="true")
-                                    span Liked
-                            li
-                                a 
-                                    span.icon.is-small 
-                                        i.fas.fa-user-ninja(aria-hidden="true")
-                                    span NSFW
-                            li
-                                a 
-                                    span.icon.is-small 
-                                        i.fas.fa-star(aria-hidden="true")
-                                    span Featured   
-                                                     
-                                    
+                    div.columns.is-multiline
+                        each val in posts
+                            div.column.is-one-third
+                                a(href="https://sketchel.art/post/" + val)
+                                    div.box
+                                        figure.image.is-4by3
+                                            img(src="https://sketchel.art/cdn/" + val + ".png") 
+                        else
+                            - var msg = true
+                    if msg 
+                        .container.is-fluid
+                            h1.title #{user} has no posts, how sad.              
+                
 
     br
     include includes/footer.pug     

@@ -12,11 +12,29 @@ html
         div.box
             div(align="center")
                 figure.image
-                    iframe(class="has-ratio", width="1039", height="483", src=image_url, frameborder="0")
+                    iframe(class="has-ratio", width="1039", height="483", src=image_url, frameborder="0", scrolling="no", style="overflow:hidden;")
                 .media
                     .media-left
-                        figure.image.is-64x64
-                            img(src="https://sketchel.art/api/v1/get-avatar/" + author)
+                        a(href="/profile/" + author)
+                            figure.image.is-48x48
+                                img(src="https://sketchel.art/api/v1/get-avatar/" + author)
                     .media-content
-                        p.title.is-4 #{author}
-                        p.subtitle.is-6 Joined at <strong>#{joindate}</strong>
+                        a(href="/profile/" + author)                        
+                            p.title.is-4 #{author}
+                            p.subtitle.is-6 Joined at <strong>#{joindate}</strong>
+            br
+            div.columns
+                div.column.is-one-half
+                    if is_disliked
+                        a.button.is-danger.is-fullwidth.is-medium(href="/dislike/" + id) <i class="fas fa-thumbs-down"></i>&nbsp;Undislike&nbsp;<strong>#{dislikes}</strong>
+                    if !is_disliked
+                        a.button.is-danger.is-fullwidth.is-medium(href="/dislike/" + id) <i class="fas fa-thumbs-down"></i>&nbsp;Dislike&nbsp;<strong>#{dislikes}</strong>
+                div.column.is-one-half
+                    if is_liked
+
+                        a.button.is-success.is-fullwidth.is-medium(href="/like/" + id) <i class="fas fa-thumbs-up"></i>&nbsp;Unlike&nbsp;<strong>#{likes}</strong>
+                    if !is_liked    
+                        a.button.is-success.is-fullwidth.is-medium(href="/like/" + id) <i class="fas fa-thumbs-up"></i>&nbsp;Like&nbsp;<strong>#{likes}</strong>                                       
+
+    br
+    include includes/footer.pug
