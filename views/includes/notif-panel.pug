@@ -1,0 +1,7 @@
+panel(id="notification-panel")
+    script. 
+        fetch('/components/notifications')
+            .then(async function(response) {
+                document.getElementById("notification-panel").innerHTML = await response.text()
+            }
+        )

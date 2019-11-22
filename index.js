@@ -1,3 +1,4 @@
+
 const Sentry = require('@sentry/node')
 Sentry.init({ dsn: 'https://8ae48a0f7a4645e0b72042f5cb3f85fc@sentry.io/1826211' })
 const express = require('express')
@@ -12,6 +13,7 @@ const date = require('date-and-time')
 const bcrypt = require('bcrypt')
 const https = require('https')
 const fs = require('fs');
+const open = require('opn');
 const app = express();
 const markdown = require('markdown')
 const xss = require('xss')
@@ -28,6 +30,9 @@ var discord = {
     "clientId": "645366454618816522",
     "clientSecret": "d2Hfn0cHpPPwoRKtpnuyM8amIxluwxF9"
   },
+  scopes: [
+    'identify',
+    'email'
   "bot": {
     "token": "NjQ1MzY2NDU0NjE4ODE2NTIy.XdBkSQ.xl9NqXwKhTtToT8uFd_G2zHTdSg"
   },
@@ -814,6 +819,11 @@ app.get('/api/v1/get-avatar/:userId', (req, res) => {
   }
 });
 
+// Serve
+app.get('/cdn/serve/:path', (req, res) => {
+  res.sendFile(__dirname + '/public/' + req.params.path);
+})
+
 app.get('/logout', (req, res) => {
   var user = getUser(req.cookies)
   if (!user) {
@@ -1000,6 +1010,13 @@ app.post('/settings/submit-changes', (req, res) => {
   return
 });
 
+app.get('/components/notifications', (req, res) => {
+  var username = getUser(req.cookies);
+  var dark = users.get(`${username}.dark`);
+
+  res.render('notifications', { user: username, dark: dark ? true : false })
+})
+
 app.post('/users/login', (req, res) => {
   var username = req.body.username;
   var password = req.body.password;
@@ -1063,16 +1080,30 @@ app.use((req, res, next) => {
 });
 
 // Start listener
-const privateKey = fs.readFileSync('/etc/letsencrypt/live/sketchel.art/privkey.pem', 'utf8');
-const certificate = fs.readFileSync('/etc/letsencrypt/live/sketchel.art/cert.pem', 'utf8');
-const ca = fs.readFileSync('/etc/letsencrypt/live/sketchel.art/chain.pem', 'utf8');
+if(!process.env.HTTPS) {
+  if(!fs.existsSync('/etc/letsencrypt/live/sketchel.art/privkey.pem')) {
+    return console.log("I recommend using `npm run dev` if you are running this locally.")
+  }
 
-const credentials = {
-	key: privateKey,
-	cert: certificate,
-	ca: ca
-};
-const httpsServer = https.createServer(credentials, app);
-httpsServer.listen(443, () => {
-	console.log('Server started listening on port 443!');
-});
+  const privateKey = fs.readFileSync('/etc/letsencrypt/live/sketchel.art/privkey.pem', 'utf8')
+  const certificate = fs.readFileSync('/etc/letsencrypt/live/sketchel.art/cert.pem', 'utf8')
+  const ca = fs.readFileSync('/etc/letsencrypt/live/sketchel.art/chain.pem', 'utf8')
+
+  const credentials = {
+    key: privateKey,
+    cert: certificate,
+    ca: ca
+  }
+  const httpsServer = https.createServer(credentials, app)
+  httpsServer.listen(443, () => {
+    console.log('Server started listening on port 443!');
+    open(`http://localhost:443`);
+
+  })
+} else {
+  const httpServer = http.createServer(app)
+  httpServer.listen(80, () => {
+    console.log('Server started listening on port 80!')
+    open(`http://localhost:80`);
+  })
+}
