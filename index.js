@@ -161,6 +161,7 @@ app.get('/api/v1/get-user/:userId', (req, res) => {
 // WIP, do not push to server yet
 // TODO:
 // Render page
+// Make search bar on navbar functionial
 app.get('/search', (req, res) => {
   if(!req.query.query) return res.status(400).send('Query not provided.')
   posts.fetchAll()
