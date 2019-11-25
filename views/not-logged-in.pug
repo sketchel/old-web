@@ -2,12 +2,14 @@ doctype html
 html 
   include includes/head.pug
   body
-    if !authorized
-        include includes/navbar-1.pug
-
     if !authorized 
         section.hero.is-large.is-danger.is-bold
-            div.container.is-fluid
+            div.container
+                div.hero-head
+                    if authorized
+                        include includes/navbar-2 
+                    if !authorized
+                        include includes/navbar-1  
                 div.hero-body
                     h1.title You need to be logged in to use this page. <i class="em em-bust_in_silhouette" aria-role="presentation" aria-label=""></i> 
                     h2.subtitle You're trying to visit a page you need to be logged into to use.
@@ -19,4 +21,8 @@ html
                             a(href="/login") 
                                 button.button.is-primary.is-rounded Or, you can login here.
                                         
-    include includes/footer.pug     
+    footer.footer.has-text-centered
+        div.container
+            p <strong>Sketchel</strong> © <strong>2019</strong>, made with <a href="https://bulma.io">Bulma</a>, <a href="https://expressjs.com/">Express</a> and <a href="https://pugjs.com/">Pug</a> & more libraries, and also <span class="icon has-text-danger"><i class="fas fa-heart"></i></span>.
+            p <a href="/rules">Rules</a> | <a href="/terms">Terms of Service</a> | <a href="/credits">Credits</a>    
+            p <strong>Quote:</strong> #{quote}              

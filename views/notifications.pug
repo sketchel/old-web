@@ -1,0 +1,19 @@
+include includes/head
+
+section.hero.has-text-centered
+  .card-header.has-text-centered(style='\
+  box-shadow: none;\
+  ')
+    .container
+        h1.title.has-text-right(style='\
+            position: absolute;\
+            right: 25px;\
+            top: -2px;\
+            opacity: 0.8;\
+            ')
+            a(onclick='sketchelapp.panels.notifications.close()', style="filter: grayscale(1)")
+                i.fas.fa-times(aria-hidden='true', style="font-size: 23px;")
+
+        h1.title.has-text-centered Notifications
+  .card-content
+    h2.subtitle Nothing yet!

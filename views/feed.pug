@@ -1,0 +1,27 @@
+doctype html
+html 
+  include includes/head.pug
+  body 
+    if authorized
+        include includes/navbar-2.pug
+    if !authorized
+        include includes/navbar-1.pug
+
+    section.hero.is-primary.is-bold
+      div.hero-body
+        div.container.is-fluid
+            h1.title Your Feed <i class="em em-newspaper" aria-role="presentation" aria-label="NEWSPAPER"></i>
+            h2.subtitle The Inbox of your Sketchel Profile.
+            div.field
+                p.control
+                    a(href="/profile") 
+                        button.button.is-primary.is-rounded Go to your profile
+    
+    div.container.is-fluid
+        div.columns.is-multiline
+            each val in list
+                div.column.is-one-third
+                    a(href="https://sketchel.art/post/" + val)
+                        div.box
+                            figure.image.is-4by3
+                                img(src="https://sketchel.art/cdn/" + val + ".png") 

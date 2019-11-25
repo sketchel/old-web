@@ -1,41 +1,42 @@
 doctype html
 html 
   include includes/head.pug
-  body
-    if authorized
-        include includes/navbar-2 
-    if !authorized
-        include includes/navbar-1    
-
 
     section.hero.is-medium.is-primary.is-bold
-      div.container.is-fluid
-        div.hero-body
+      div.container
+        div.hero-head
             if authorized
-                h1.title.is-2 <strong>Welcome back,</strong> #{username} <i class="em em-wave" aria-role="presentation" aria-label="WAVING HAND SIGN"></i>
+                include includes/navbar-2 
+            if !authorized
+                include includes/navbar-1  
+        div.hero-body.has-text-centered
+            if authorized
+                h1.title.is-2 <i class="em em em-wave" aria-role="presentation" aria-label=""></i>
+                h1.title <strong>Welcome back,</strong> #{username}
                 h2.subtitle We've missed you.  
             if !authorized
-                h1.title.is-1 <strong>Sketchel</strong>
+                h1.title.is-2 <i class="em em-lower_left_paintbrush" aria-role="presentation" aria-label=""></i>
+                h1.title <strong>Sketchel</strong>
                 h2.subtitle The newest platform to upload drawings/animations.   
             if !authorized     
-                div.field
-                    p.control
-                        a(href="/signup") 
-                            button.button.is-link.is-rounded Register for Sketchel here.
-                            
-                        a(href="/login") 
-                            button.button.is-primary.is-rounded Or, you can login here.
+                div.field.has-text-centered
+                    p.control.has-text-centered
+                        a.button.is-light.is-rounded.is-outlined(href="/signup") Register for Sketchel here.
+                        span &nbsp;&nbsp;
+                        a.button.is-light.is-rounded.is-outlined(href="/login") Or, you can login here.
             if authorized
-                div.field
-                    p.control
-                        a(href="/hot") 
-                            button.button.is-primary.is-rounded See the most popular posts.
-                            
-                        a(href="/feed") 
-                            button.button.is-primary.is-rounded See your feed.
-                            
+                div.field.has-text-centered
+                    p.control.has-text-centered
+                        a.button.is-light.is-rounded.is-outlined(href="/hot") What's hot?
+                        span &nbsp;&nbsp;
+                        a.button.is-light.is-rounded.is-outlined(href="/feed") Feed
+    
+    footer.footer.has-text-centered
+        div.container
+            p <strong>Sketchel</strong> © <strong>2019</strong>, made with <a href="https://bulma.io">Bulma</a>, <a href="https://expressjs.com/">Express</a> and <a href="https://pugjs.com/">Pug</a> & more libraries, and also <span class="icon has-text-danger"><i class="fas fa-heart"></i></span>.
+            p <a href="/rules">Rules</a> | <a href="/terms">Terms of Service</a> | <a href="/credits">Credits</a>    
+            p <strong>Quote:</strong> #{quote}                
+           
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
     <ins class="adsbygoogle" style="display:inline-block;width:728px;height:90px" data-ad-client="ca-pub-2539921328018448" data-ad-slot="5011119499"></ins>
-    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>                            
-    
-    include includes/footer.pug             
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
