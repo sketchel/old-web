@@ -1,4 +1,3 @@
-
 const Sentry = require('@sentry/node')
 Sentry.init({ dsn: 'https://8ae48a0f7a4645e0b72042f5cb3f85fc@sentry.io/1826211' })
 const express = require('express')
@@ -159,50 +158,20 @@ app.get('/api/v1/get-user/:userId', (req, res) => {
   return res.status(200).json({ bio: bio, avatar: avatar, rank: rank, following: following, followers: followers, join_date: joindate, following: following_list, followers: follower_list })
 })
 
-/**
-app.post('/api/render', (req, res) => {
-  try {
-    let body = JSON.parse(Object.keys(req.body)[0]);
-    let canvas = createCanvas(body.width, body.height);
-    let ctx = canvas.getContext('2d');
-    ctx.beginPath();
-    ctx.lineCap = "round";
-    ctx.strokeStyle = "#ffffff";
-    ctx.lineWidth = body.width*body.height;
-    ctx.moveTo(1, 1);
-    ctx.lin
-    for (let iii = 0; iii < body.history.length; iii++) {
-      let el = body.history[iii];
-
-      ctx.beginPath();
-      ctx.lineCap = "round";
-      ctx.strokeStyle = el.color;
-      ctx.lineWidth = el.width;
-      ctx.moveTo(el.from.x, el.from.y);
-      ctx.lineTo(el.to.x, el.to.y);
-      ctx.stroke();
-    }
-    
-    while (true)
-    {
-      path = __dirname + "/public/cdn/" + uuidv4() + ".png";
-      if (!fs.existsSync(path))
-      {
-        break;
-      }
-    }
-    res.send("https://sketchel.art/cdn/" + path.split("/public/cdn/")[1]);
-    let base = canvas.toDataURL()
-    var base64Data = base.replace(/^data:image\/png;base64,/, "");
-
-    require("fs").writeFile(path, base64Data, 'base64', function(err) {
-      console.log(err);
-    });
-  } catch (err) {
-    let id = Sentry.captureException(err);
-    res.send("There was an error with your request. Reference error ID " + id + " with support");
-  }
-}) */
+// WIP, do not push to server yet
+// TODO:
+// Render page
+app.get('/search', (req, res) => {
+  if(!req.query.query) return res.status(400).send('Query not provided.')
+  posts.fetchAll()
+    .then((e) => e.filter((o) => o.ID.includes(req.query.query)))
+      .then((results) => {
+        if(results.length === 0) return res.send('No posts found.')
+        let result = ''
+        results.forEach((i) => result += `${i.ID}, `)
+        res.send(`Found ${result}`)
+      })
+})
 
 app.post('/api/post', (req, res) => {
   let user = getUser(req.cookies)
