@@ -1,5 +1,5 @@
 head
-  title Sketchel
+  title #{title} | Sketchel
   meta(charset="UTF-8")
   meta(name="title", content="Sketchel — Draw, Edit and Look")
   meta(name="description", content="Sketchel is a new modern drawing website.")
@@ -17,10 +17,7 @@ head
   meta(property="twitter:title", content="Sketchel — Draw, Edit and Look")
   meta(property="twitter:description", content="Sketchel is a new modern drawing website.")
   meta(property="twitter:image", content="/assets/sketchel.png")
-  if !dark
-    link(rel='stylesheet', type="text/css", href='/css/style.css')
-  else 
-    link(rel='stylesheet', type="text/css", href='/css/dark.css')
+  link(rel='stylesheet', type="text/css", href='/css/style.css')
   link(rel='stylesheet', href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.2/animate.min.css")
   script(src="https://kit.fontawesome.com/9558a49d61.js", crossorigin="anonymous")
   script(src="/js/app.js")
@@ -32,5 +29,3 @@ head
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flexboxgrid/6.3.1/flexboxgrid.min.css" type="text/css" >
   script(src="https://cdn.jsdelivr.net/npm/sweetalert2@9")
   <script data-ad-client="ca-pub-2539921328018448" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-  include notif-panel
-

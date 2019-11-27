@@ -1,0 +1,47 @@
+doctype html
+head
+  meta(charset='utf-8')
+  meta(http-equiv='X-UA-Compatible' content='IE=edge')
+  title Sketchel Cookies
+  meta(name='viewport' content='width=device-width, initial-scale=1')
+  link(href='https://sketchel.art/css/nunito.css' rel='stylesheet')
+  script.
+    function agree() {
+      document.cookie = "cookie_consent=true";
+      window.location.href = window.location.href;
+    }
+  style.
+    @import url("https://fonts.googleapis.com/css?family=Nunito:400,700");
+    html {
+    height: 100%;
+    width: 100%;
+    }
+    body {
+    height: 100%;
+    width: 100%;
+    overflow-x: hidden;
+    margin: 0;
+    background-color: #5FC1F9;
+    font-family: "Nunito", sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    color: #fff;
+    text-align: center;
+    }
+    h1 {
+    margin-top: 0
+    }
+    div {
+    padding-top: 25px
+    }
+div
+  h1 Sketchel
+  h3 We use cookies and other technologies to recognise your browser or device, learn about your interests, and provide you with  essential features and services and for additional purposes including:
+    p ⚬  Remember who you are to keep you logged in, allowing you to use our services. 
+    p ⚬  Keep track of what you like, so we can recommend you content that you might like.
+    p ⚬  Keeping track of what your intentions are, and preventing fraudulent activity.
+    p ⚬  Improving the site to match our users.
+    p ⚬  Serve you content, including ads, relevant to your interests.
+    p ⚬  Generate analytical reports to improve the site for everyone.
+  
+  button(class="test", onclick="agree()") I agree to all cookies

@@ -1,0 +1,26 @@
+doctype html
+html 
+  include includes/head.pug
+  body 
+
+    section.hero.is-primary.is-bold
+        div.container
+            div.hero-head
+                if !authorized
+                    include includes/navbar-1.pug
+                if authorized
+                    include includes/navbar-2.pug
+            div.hero-body
+                div.container
+                h1.title Search Results <i class="em em-mag_right" aria-role="presentation" aria-label="RIGHT-POINTING MAGNIFYING GLASS"></i>
+                h2.subtitle Subtitle because I don't care enough to make up one on the spot.
+                div.columns.is-multiline
+                    div.column.is-one-third
+                        div.box
+                            article(class="notification has-background-white media")
+                                figure(class="media-left")
+                                    a(href="/")
+                                        span(class="icon")
+                                            i(class="animated pulse fas fa-home fa-2x")
+                                div(class="media-content")
+                                    a.button.is-white(href="/") Wanna go home?

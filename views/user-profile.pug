@@ -21,6 +21,10 @@ html
                             a(href="/login") 
                                 button.button.is-danger.is-rounded Or, you can login here.
     if authorized
+        if authorized
+            include includes/navbar-2 
+        if !authorized
+            include includes/navbar-1 
         script(src="/js/modal.js", type="text/javascript", crossorigin="anonymous")
         script(src="/js/autolink.js", type="text/javascript", crossorigin="anonymous")
         div.modal.is-clipped(id="followingModal")
@@ -71,7 +75,7 @@ html
 
         div.container
             div.columns.is-multiline
-                .column.is-one-quarter
+                .column.is-one-third
                     div.card
                         div.card-image
                             figure.image.is-4by3
@@ -80,7 +84,7 @@ html
                             .media
                                 .media-left
                                     figure.image.is-64x64
-                                        img(src=avatar, style="border-radius: 50px;box-shadow: 0 0 2px black;"))
+                                        img(src=avatar, style="border-radius: 50px;box-shadow: 0 0 2px black;")
                                 .media-content
                                     if rank = "owner"
                                         p.title.is-4 #{user}   
@@ -117,16 +121,10 @@ html
                                         figure.image.is-4by3
                                             img(src="https://sketchel.art/cdn/" + val + ".png") 
                         else
-                            - var msg = true
-                    if msg 
-                        .container.is-fluid
-                            h1.title #{user} has no posts, how sad.              
+                            div.column.is-one-third
+                                div.box
+                                    h1.title #{user} has no posts.           
                 
 
     br
-    footer.footer.has-text-centered
-        div.container
-            p <strong>Sketchel</strong> © <strong>2019</strong>, made with <a href="https://bulma.io">Bulma</a>, <a href="https://expressjs.com/">Express</a> and <a href="https://pugjs.com/">Pug</a> & more libraries, and also <span class="icon has-text-danger"><i class="fas fa-heart"></i></span>.
-            p <a href="/rules">Rules</a> | <a href="/terms">Terms of Service</a> | <a href="/credits">Credits</a>    
-            p <strong>Quote:</strong> #{quote}             
-
+    include includes/footer.pug
