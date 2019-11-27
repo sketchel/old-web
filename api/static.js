@@ -42,7 +42,7 @@ exports.welcome = function(req, res){
 exports.create = function(req, res){
     var quote = getQuote()
     var user = getUser(req.cookies) 
-    res.render('create', { title: "Create", quote: quote, username: user, authorized: user ? true : false })
+    res.render('canvas', { title: "Create", quote: quote, username: user, authorized: user ? true : false })
   };  
 
 exports.privacy = function(req, res){

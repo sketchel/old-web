@@ -53,7 +53,7 @@ app.get('/', static.index);
 app.get('/welcome', static.welcome)
 app.get('/rules', static.rules)
 app.get('/terms', static.terms)
-app.get('/create', static.create)
+app.get('/create', static.create) 
 
 app.get('/login', static.login)
 app.get('/signup', static.signup)
@@ -67,6 +67,7 @@ app.get('/follow/:userId', posts.follow)
 /** API */
 app.get('/api/v1/get-user/:userId', api.get_user)
 app.get('/api/v1/get-avatar/:userId', api.get_avatar)
+app.get('/api/post', api.post_image)
 
 /** Sitemaps */
 app.get('/sitemap', sitemap.sitemap)
