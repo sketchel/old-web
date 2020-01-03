@@ -1,6 +1,6 @@
 <div align="center">
   
-  ![Logo](public/assets/sketchel-small.png)
+  ![Logo](public/assets/Sketchel_Big.png)
   
   <h1><b>Sketchel</b></h1>
   A simple community-driven drawing application.
@@ -49,4 +49,4 @@ For support (and to support us), come and join our Discord server!
  
 This project is licensed under the [MIT License](https://opensource.org/licenses/MIT) - see the [LICENSE](LICENSE) file for more info.
 
-P.S. Also made with ❤️.
+Made with ❤️ & 🍬.
