@@ -49,16 +49,17 @@ html
                         span.icon.is-small
                             i.fas.fa-times
                 section.modal-card-body
-                    each val in following_list
-                        div.box
-                            .media
-                                .media-left
-                                    a(href="/profile/" + val)
-                                        figure.image.is-64x64
-                                            img(src="https://sketchel.art/api/v1/get-avatar/" + val)
-                                .media-content
-                                    a(href="/profile/" + val)
-                                        p.title.is-4 #{val} 
+                    if (typeof(following_list) !== 'undefined')
+                        each val in following_list
+                            div.box
+                                .media
+                                    .media-left
+                                        a(href="/profile/" + val)
+                                            figure.image.is-64x64
+                                                img(src="https://sketchel.art/api/v1/get-avatar/" + val)
+                                    .media-content
+                                        a(href="/profile/" + val)
+                                            p.title.is-4 #{val} 
         div.modal.is-clipped(id="followerModal")
             div.modal-background
             div.modal-card
@@ -119,16 +120,17 @@ html
                     a.button.is-primary.is-fullwidth(data-target="profileModal", id="showModal") Edit profile                                                                     
                 div.column
                     div.columns.is-multiline
-                        each val in posts
-                            div.column.is-one-third
-                                a(href="https://sketchel.art/post/" + val)
-                                    div.box
-                                        figure.image.is-4by3
-                                            img(src="https://sketchel.art/cdn/" + val + ".png") 
+                        if (typeof(posts) !== 'undefined')
+                            each val in posts
+                                div.column.is-one-third
+                                    a(href="https://sketchel.art/post/" + val)
+                                        div.box
+                                            figure.image.is-4by3
+                                                img(src="https://sketchel.art/cdn/" + val + ".png") 
                         else
                             div.column.is-one-third
                                 div.box
-                                    h1.title You have no posts.
+                                    h2.subtitle You have no posts.
                                
     br
     include includes/footer

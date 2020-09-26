@@ -77,8 +77,8 @@ app.get('/map', sitemap.sitemap)
 app.get('/maps', sitemap.sitemap)
 
 /** User/Profile/ETC. */
-app.get('/users/signup', api.add_user)
-app.get('/users/login', api.login_user)
+app.post('/users/signup', api.add_user)
+app.post('/users/login', api.login_user)
 app.get('/logout', users.logout)
 app.get('/settings', users.settings)
 app.get('/profile', users.profile)

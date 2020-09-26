@@ -2,6 +2,8 @@ const db = require('quick.db')
 const bcrypt = require('bcrypt')
 const path = require('path')
 const fs = require('fs')
+const date = require('date-and-time')
+const uuidv4 = require('uuid/v4')
 const { createCanvas } = require('canvas')
 var users = new db.table('users')
 
@@ -238,100 +240,76 @@ exports.login_user = function (req, res) {
 }
 
 exports.add_user = function (req, res) {
-    var captcha = req.body['g-recaptcha-response'];
-    if (captcha === undefined || captcha === '' || captcha === null) {
-      req.flash('error', 'Captcha invalid.')
-      res.redirect('/signup')
-      return
-    }
+    //var captcha = req.body['g-recaptcha-response'];
+    //if (captcha === undefined || captcha === '' || captcha === null) {
+    //  req.flash('error', 'Captcha invalid.')
+    //  res.redirect('/signup')
+    //  return
+    //}
+    var username = req.body.username
+    var password = req.body.password
+    var alphanumeric = isAlphaNumeric(username);
     if (!req.body.username) {
       console.log("no username")
       req.flash('error', 'No username provided.')
       res.redirect('/signup')
       return
-    } else {
-      if (req.body.username.length <= 2) {
-        req.flash('error', 'Username is too short.')
-        res.redirect('/signup')
-        console.log("username too short.")
-        return    
-      } else {
-        if (!req.body.email) {
-          req.flash('error', 'No email provided.')
-          res.redirect('/signup')
-          return
-        }   
-        if (!req.body.password) {
-          req.flash('error', 'No password provided.')
-          res.redirect('/signup')
-          return
-        }  
-        if (!req.body.confirmPassword) {
-          req.flash('error', 'No confirm password provided.')
-          res.redirect('/signup')
-          return
-        } 
-        if (req.body.confirmPassword !== req.body.password) {
-          req.flash('error', 'Password doesn\'t match confirm password.')
-          res.redirect('/signup')
-          return
-        } else if (req.body.tosCheck !== "on") {
-          req.flash('error', 'I highly doubt you think you are going to receive an account if you don\'t agree to the checkbox below.')
-          res.redirect('/signup')
-          return
-        } else if (!users.get(`${req.body.username}`)) {
-          var username = req.body.username;
-          var alphanumeric = isAlphaNumeric(username);
-          if (alphanumeric === false) {
-            req.flash('error', 'Your username isn\'t alphanumeric.')
-            res.redirect('/signup')
-            return
-          }
-          var password = req.body.password;
-          if (password.length > 72)
-          {
-            req.flash('error', 'Your password was too long (72 characters limit)');
-            res.redirect('/signup');
-            return;
-          }
-            request("https://www.google.com/recaptcha/api/siteverify?secret=" + grecaptcha.secret + "&response=" + captcha + "&remoteip=" + req.connection.remoteAddress, (error, response, body) => {
-              body = JSON.parse(body);
-              if(body.success !== undefined && !body.success) {
-                req.flash('error', 'Captcha invalid')
-                res.redirect('/signup')
-              }
-              else
-              {
-                var hash = bcrypt.hashSync(password, 12);
-                var email = req.body.email;
-                const now = new Date();
-                users.set(`${username}`, {
-                  "password" : hash, 
-                  "email" : email, 
-                  "followers": 0,
-                  "following": 0,
-                  "followers_list": [],
-                  "following_list": [],
-                  "password" : hash, 
-                  "rank" : 'default', 
-                  "username" : username, 
-                  "nsfw": false,
-                  "private": false,
-                  "avatar" : "/assets/profile.png", 
-                  "bio" : "This user prefers to stay quiet.",
-                  "joindate": date.format(now, 'MM/DD/YYYY'),
-                  "jointime": date.format(now, 'HH:mm:ss')
-                })
-                var session = uuidv4();
-                res.cookie('session', `${username}.${session}`)
-                users.set(`${username}.session`, `${username}.${session}`);
-                res.redirect('/welcome')
-              }
-            });
-          } else {
-          req.flash('error', 'Username has been already taken, sorry.')
-          res.redirect('/signup')
-          return
-        }
-      } 
-    }}
+    } else if (req.body.username.length <= 2) {
+      req.flash('error', 'Username is too short.')
+      res.redirect('/signup')
+      console.log("username too short.")
+      return    
+    } else if (!req.body.email) {
+      req.flash('error', 'No email provided.')
+      res.redirect('/signup')
+      return
+    } else if (!req.body.password) {
+      req.flash('error', 'No password provided.')
+      res.redirect('/signup')
+      return
+    } else if (!req.body.confirmPassword) {
+      req.flash('error', 'No confirm password provided.')
+      res.redirect('/signup')
+      return
+    } else if (req.body.confirmPassword !== req.body.password) {
+      req.flash('error', 'Password doesn\'t match confirm password.')
+      res.redirect('/signup')
+      return
+    } else if (req.body.tosCheck !== "on") {
+      req.flash('error', 'I highly doubt you think you are going to receive an account if you don\'t agree to the checkbox below.')
+      res.redirect('/signup')
+      return
+    } else if (!alphanumeric) {
+      req.flash('error', 'Your username isn\'t alphanumeric.')
+      res.redirect('/signup')
+      return
+    } else if (req.body.password.length > 72) {
+      req.flash('error', 'Your password was too long (72 characters limit)');
+      res.redirect('/signup');
+      return
+    }
+    var hash = bcrypt.hashSync(password, 12);
+    var email = req.body.email;
+    const now = new Date();
+    users.set(`${username}`, {
+      "password" : hash, 
+      "email" : email, 
+      "followers": 0,
+      "following": 0,
+      "followers_list": [],
+      "following_list": [],
+      "password" : hash, 
+      "rank" : 'default', 
+      "username" : username, 
+      "nsfw": false,
+      "private": false,
+      "avatar" : "/assets/profile.png", 
+      "bio" : "This user prefers to stay quiet.",
+      "joindate": date.format(now, 'MM/DD/YYYY'),
+      "jointime": date.format(now, 'HH:mm:ss')
+    })
+    var session = uuidv4();
+    res.cookie('session', `${username}.${session}`)
+    users.set(`${username}.session`, `${username}.${session}`)
+    res.redirect('/welcome')
+  }

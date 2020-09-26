@@ -50,17 +50,19 @@ exports.privacy = function(req, res){
     var user = getUser(req.cookies) 
     res.render('privacy', { title: "Privacy Policy", quote: quote, username: user, authorized: user ? true : false })
   }; 
-  
+ 
+// gsitekey: grecaptcha.site
+
 exports.login = function(req, res){
     var quote = getQuote()
     var user = getUser(req.cookies) 
-    res.render('login', { title: "Login", quote: quote, username: user, authorized: user ? true : false, gsitekey: grecaptcha.site })
+    res.render('login', { title: "Login", quote: quote, username: user, authorized: user ? true : false})
   };   
 
 exports.signup = function(req, res){
     var quote = getQuote()
     var user = getUser(req.cookies) 
-    res.render('signup', { title: "Signup", quote: quote, username: user, authorized: user ? true : false, gsitekey: grecaptcha.site })
+    res.render('signup', { title: "Signup", quote: quote, username: user, authorized: user ? true : false})
   }; 
 
 exports.terms = function(req, res){
