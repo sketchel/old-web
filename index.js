@@ -6,6 +6,7 @@ const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser')
 const session = require('express-session')
 const https = require('https')
+const http = require('http')
 const fs = require('fs');
 const app = express();
 const helmet = require('helmet')
@@ -120,15 +121,22 @@ app.use((req, res, next) => {
 });
 
 /** Start the listener */
-const privateKey = fs.readFileSync('/etc/letsencrypt/live/sketchel.art/privkey.pem', 'utf8');
-const certificate = fs.readFileSync('/etc/letsencrypt/live/sketchel.art/cert.pem', 'utf8');
-const ca = fs.readFileSync('/etc/letsencrypt/live/sketchel.art/chain.pem', 'utf8');
-const credentials = {
-	key: privateKey,
-	cert: certificate,
-	ca: ca
-};
-const httpsServer = https.createServer(credentials, app);
-httpsServer.listen(443, () => {
-	console.log('Server started listening on port 443!');
-});
+try {
+  const privateKey = fs.readFileSync('/etc/letsencrypt/live/sketchel.art/privkey.pem', 'utf8');
+  const certificate = fs.readFileSync('/etc/letsencrypt/live/sketchel.art/cert.pem', 'utf8');
+  const ca = fs.readFileSync('/etc/letsencrypt/live/sketchel.art/chain.pem', 'utf8');
+  const credentials = {
+    key: privateKey,
+    cert: certificate,
+    ca: ca
+  };
+  const httpsServer = https.createServer(credentials, app);
+  httpsServer.listen(443, () => {
+    console.log('Server started listening on port 443!');
+  });
+} catch(e) {
+  const httpServer = http.createServer(app)
+  httpServer.listen(8000, () => {
+    console.log('Server started listening on port 8000!');
+  })
+}
