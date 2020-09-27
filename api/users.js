@@ -70,50 +70,50 @@ exports.user_profile = function (req, res) {
 }
 
 exports.settings = function (req, res) { 
-    var quote = getQuote()
-    var user = getUser(req.cookies) 
-    res.render('settings', { title: "Settings", quote: quote, username: user, authorized: user ? true : false })
-  };  
+  var quote = getQuote()
+  var user = getUser(req.cookies)
+  res.render('settings', { title: 'Settings', quote: quote, username: user, authorized: user ? true : false })
+}
 
 exports.logout = function (req, res) {
-    var user = getUser(req.cookies)
-    if (!user) {
-      return res.redirect("/")
-    }
-    res.clearCookie("session")
-    res.redirect("/")
-    users.set(`${user}.session`, null);
+  var user = getUser(req.cookies)
+  if (!user) {
+    return res.redirect('/')
+  }
+  res.clearCookie('session')
+  res.redirect('/')
+  users.set(`${user}.session`, null)
 }
 
 exports.profile = function (req, res) {
-    var quote = getQuote()
-    var user = getUser(req.cookies) 
-    if (!user) {
-      res.render('profile', { title: "Your Profile", quote: quote })
-    }
-    var username = user;
-    var bio = users.get(`${user}.bio`)
-    var avatar = users.get(`${user}.avatar`)
-    var rank = users.get(`${user}.rank`)
-    var following = users.get(`${user}.following`)
-    var followers = users.get(`${user}.followers`)
-    var joindate = users.get(`${user}.joindate`)
-    var posts = users.get(`${user}.posts_list`)
-    var user_to_list = users.get(`${user}.following_list`)
-    var users_to_list = users.get(`${user}.followers_list`)    
-    res.render('profile', { 
-      title: "Your Profile",
-      quote: quote, 
-      username: username, 
-      bio: markdown.parse(xss(bio)), 
-      avatar: avatar, 
-      rank: rank, 
-      followers: followers, 
-      following: following, 
-      authorized: "true",
-      joindate: joindate,
-      following_list: user_to_list,
-      follower_list: users_to_list,
-      posts: posts
-    })
+  var quote = getQuote()
+  var user = getUser(req.cookies) 
+  if (!user) {
+    res.render('profile', { title: 'Your Profile', quote: quote })
+  }
+  var username = user;
+  var bio = users.get(`${user}.bio`)
+  var avatar = users.get(`${user}.avatar`)
+  var rank = users.get(`${user}.rank`)
+  var following = users.get(`${user}.following`)
+  var followers = users.get(`${user}.followers`)
+  var joindate = users.get(`${user}.joindate`)
+  var posts = users.get(`${user}.posts_list`)
+  var userToList = users.get(`${user}.following_list`)
+  var usersToList = users.get(`${user}.followers_list`)
+  res.render('profile', {
+    title: 'Your Profile',
+    quote: quote,
+    username: username,
+    bio: markdown.parse(xss(bio)),
+    avatar: avatar,
+    rank: rank,
+    followers: followers,
+    following: following,
+    authorized: 'true',
+    joindate: joindate,
+    following_list: userToList,
+    follower_list: usersToList,
+    posts: posts
+  })
 }

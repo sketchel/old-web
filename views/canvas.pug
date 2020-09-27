@@ -1,10 +1,13 @@
 html 
   include includes/head.pug
   body
-    if authorized
-        include includes/navbar-2 
-    if !authorized
-        include includes/navbar-1  
+    section.hero.is-small.is-primary.is-bold
+        div.container
+            div.hero-head
+                if authorized
+                    include includes/navbar-2 
+                if !authorized
+                    include includes/navbar-1 
     script(src="https://code.jquery.com/jquery-3.4.1.min.js")
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/bulma-slider@2.0.4/dist/js/bulma-slider.min.js"></script>
     <link rel="stylesheet" href="@sweetalert2/theme-bulma/bulma.css">

@@ -1,6 +1,7 @@
 doctype html
 html 
   include includes/head.pug
+  script(src="/js/autolink.js")
   body
     if !authorized 
         section.hero.is-medium.is-danger.is-bold
@@ -36,7 +37,7 @@ html
                         p Bio
                             div.field
                                 p.control
-                                    textarea.textarea(name="bio", placeholder="Say something about yourself, like, you like doing backflips, or something.")
+                                    textarea.textarea(name="bio", placeholder="Say something about yourself, like, you like doing backflips, or something.") #{bio}
                         div.buttons
                             input(class="button is-success is-rounded", type="submit", value="Save Changes")   
 
