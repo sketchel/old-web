@@ -30,7 +30,7 @@ html
                     if !authorized
                         include includes/navbar-1 
                 div.hero-body
-                    h1.title <i class="em em-gear" aria-role="presentation" aria-label=""></i> #{username}'s Settings
+                    h1.title #{username}'s Settings <i class="em em-gear" aria-role="presentation" aria-label=""></i>
                     h2.subtitle P.S. That's you!
                     div.field
                         p.control
@@ -68,10 +68,7 @@ html
                             label(for="nsfwCheck") Do you post NSFW (18+) content?
                         div.field 
                             input.is-checkradio.is-warning.has-background-color(type="checkbox" name="privateCheck", id="privateCheck")   
-                            label(for="privateCheck") Private account?          
-                        div.field
-                            input.is-checkradio.is-link.has-background-color(type="checkbox" name="darkswitch", id="darkswitch")   
-                            label(for="darkswitch") Dark Mode?      
+                            label(for="privateCheck") Private account?                
                         div(align="center")
                             input(class="button is-success is-medium is-rounded", type="submit", value="Save Changes") 
     br            

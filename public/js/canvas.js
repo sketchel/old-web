@@ -9,6 +9,7 @@ function download(filename, data) {
 }
 
 window.onload = () => {
+	bulmaSlider.attach();
 	function preventBehavior(e) {
 		e.preventDefault(); 
 	};
@@ -27,29 +28,29 @@ window.onload = () => {
 		"BrushWidth": 10,
 		"Color": "#FF0000"
 	};
-	document.getElementsByClassName("ExportBtn")[0].addEventListener("click", (e) => {
+	document.getElementsByClassName("Export")[0].addEventListener("click", (e) => {
 		if (Sketchel.History.length > 0) {
 			download("Sketchel_Export.png", Sketchel.canvas.toDataURL());
 		} else {
-			alert("You might want to actually draw something before exporting your drawing... Just sayin");
+			alert("You might want to actually draw something before exporting your drawing... Just sayin'")
 		}
 	});
-	document.getElementsByClassName("SaveBtn")[0].addEventListener("click", (e) => {
-		document.getElementsByClassName("SaveBtn")[0].style.backgroundImage = "url(https://sketchel.art/assets/hourglass.svg)";
-		document.getElementsByClassName("SaveBtn")[0].style.backgroundSize = "contain";
+	document.getElementsByClassName("Save")[0].addEventListener("click", (e) => {
+		document.getElementsByClassName("Save")[0].style.backgroundImage = "url(../assets/svg/upload.svg)";
+		document.getElementsByClassName("Save")[0].style.backgroundSize = "contain";
 		if (Sketchel.History.length > 0) {
 
 			const swalWithBootstrapButtons = Swal.mixin({
 				customClass: {
-					confirmButton: 'btn btn-success',
-					cancelButton: 'btn btn-danger'
+					confirmButton: ' -success',
+					cancelButton: ' -danger'
 				},
 				buttonsStyling: false
 			})
 			
 			swalWithBootstrapButtons.fire({
 				title: 'What should the drawing be called?',
-				html: '<input id="SketchelTitle" name="title" placeholder="Rocky terrain"></input>',
+				html: '<input class="input" type="text" id="SketchelTitle" name="title" placeholder="Rocky terrain"></input>',
 				icon: 'warning',
 				showCancelButton: true,
 				confirmButtonText: 'Upload',
@@ -64,29 +65,31 @@ window.onload = () => {
 				};
 
 				if (result.value) {
+					console.log(postData)
 					$.ajax({
 						type: 'POST',
-						url: 'https://sketchel.art/api/post',
+						url: 'localhost:8000/api/post',
 						processData: false,
 						data: JSON.stringify(postData),
 						success: function(msg) {
 							window.Sketchel.isSaving = false;
-							document.getElementsByClassName("SaveBtn")[0].style.backgroundImage = "url(https://sketchel.art/assets/fontawesome/solid/upload.svg)";
-							document.getElementsByClassName("SaveBtn")[0].style.backgroundSize = "auto";
+							document.getElementsByClassName("Save")[0].style.backgroundImage = "url(../assets/svg/upload.svg)";
+							document.getElementsByClassName("Save")[0].style.backgroundSize = "auto";
 							Swal.fire({
 								title: 'Sweet!',
 								html: 'You just uploaded your drawing!<br/><br/><div class="field has-addons" style="margin-left:10%;margin-right:10%;"><div class="control" style="width:100%"><input class="input sketchelLink" type="text" placeholder="" readonly></div><div class="control"><a class="button is-info" onclick="window.Sketchel.copyLink()">Copy</a></div></div>',
-								imageUrl: 'https://sketchel.art/cdn/' + msg + '.png',
+								imageUrl: 'localhost:8000/cdn/' + msg + '.png',
 								imageAlt: 'Your uploaded drawing!',
 							});
-							document.getElementsByClassName("sketchelLink")[0].value = "https://sketchel.art/post/" + msg;
+							document.getElementsByClassName("sketchelLink")[0].value = "localhost:8000/post/" + msg;
 						},
-						error: function(msg) {
+						error: function (xhr, status, error) {
 							Swal.fire({
 								title: 'Oof!',
-								html: 'Something wen\'t wrong <code>' + JSON.stringify(msg) + '</code>',
+								html: 'Something went wrong <code>' + JSON.stringify(xhr) + '</code>',
 								icon: 'error'
 							});
+							console.log(msg)
 						},
 						fail: function(msg) {
 							Swal.fire({
@@ -115,12 +118,12 @@ window.onload = () => {
 	window.Sketchel.copyLink = () => {
 		navigator.clipboard.writeText(document.getElementsByClassName('sketchelLink')[0].value);
 	}
-	document.getElementsByClassName("PencilBtn")[0].addEventListener("click", (e) => {
-		window.Sketchel.canvas.style.cursor = "url(pencilCur.svg) 5 5, auto";
+	document.getElementsByClassName("Pencil")[0].addEventListener("click", (e) => {
+		window.Sketchel.canvas.style.cursor = "url(../assets/svg/pencil.svg) 5 5, auto";
 		window.Sketchel.pickr.applyColor();
 	});
-	document.getElementsByClassName("EraserBtn")[0].addEventListener("click", (e) => {
-		window.Sketchel.canvas.style.cursor = "url(eraserCur.svg) 5 5, auto";
+	document.getElementsByClassName("Eraser")[0].addEventListener("click", (e) => {
+		window.Sketchel.canvas.style.cursor = "url(../assets/svg/eraser.svg) 5 5, auto";
 		window.Sketchel.Settings.Color = "#ffffff";
 	});
 	window.Sketchel.Redraw = () => {
@@ -145,11 +148,11 @@ window.onload = () => {
 	document.onkeydown = (e) => {
 		var evtobj = window.event? event : e;
 		if (evtobj.keyCode == 90 && evtobj.ctrlKey) 
-			document.getElementsByClassName("UndoBtn")[0].click();
+			document.getElementsByClassName("Undo")[0].click();
 		if (evtobj.keyCode == 89 && evtobj.ctrlKey)
-			document.getElementsByClassName("RedoBtn")[0].click();
+			document.getElementsByClassName("Redo")[0].click();
 	}
-	document.getElementsByClassName("UndoBtn")[0].addEventListener("click", (e) => {
+	document.getElementsByClassName("Undo")[0].addEventListener("click", (e) => {
 		if (window.Sketchel.isDrawing) return;
 		if (window.Sketchel.History.length == 0) return;
 		while (true) {
@@ -162,7 +165,7 @@ window.onload = () => {
 			}
 		}
 	});
-	document.getElementsByClassName("RedoBtn")[0].addEventListener("click", (e) => {
+	document.getElementsByClassName("Redo")[0].addEventListener("click", (e) => {
 		if (window.Sketchel.isDrawing) return;
 		if (window.Sketchel.Redo.length == 0) return;
 		var final = false;
@@ -178,7 +181,7 @@ window.onload = () => {
 			if (window.Sketchel.Redo[window.Sketchel.Redo.length-1].final) final = true;
 		}
 	});
-	document.getElementsByClassName("ClearBtn")[0].addEventListener("click", (e) => {
+	document.getElementsByClassName("Clear")[0].addEventListener("click", (e) => {
 		window.Sketchel.Redo = [];
 		window.Sketchel.Clear();
 		window.Sketchel.History.push({
@@ -196,11 +199,11 @@ window.onload = () => {
 			"final": true
 		});
 	});
-	document.getElementsByClassName("Brushslider")[0].onmousemove = (e) => {
+	document.getElementById("sliderWithValue").onmousemove = (e) => {
 		window.Sketchel.Settings.BrushWidth = e.target.value;
 		document.getElementsByClassName("BrushSize")[0].innerHTML = e.target.value;
 	};
-	document.getElementsByClassName("Brushslider")[0].onchange = (e) => {
+	document.getElementById("sliderWithValue").onchange = (e) => {
 		window.Sketchel.Settings.BrushWidth = e.target.value;
 		document.getElementsByClassName("BrushSize")[0].innerHTML = e.target.value;
 	};
@@ -238,8 +241,8 @@ window.onload = () => {
 			}
 		}
 	});
-	document.getElementsByClassName("pcr-button")[0].style.height = "100%";
-	document.getElementsByClassName("pcr-button")[0].style.width = "100%";
+	document.getElementsByClassName("pcr-button")[0].style.height = "1%";
+	document.getElementsByClassName("pcr-button")[0].style.width = "2%";
 	window.Sketchel.canvas = document.getElementsByClassName("SketchelCanvas")[0];
 	window.Sketchel.ctx = window.Sketchel.canvas.getContext("2d");
 

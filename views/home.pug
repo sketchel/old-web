@@ -16,19 +16,19 @@ html
                     h1.title <strong>Welcome back,</strong> #{username}
                     h2.subtitle We've missed you.  
                     div.field.has-text-centered
-                        p.control.has-text-centered
-                            a.button.is-light.is-rounded.is-outlined(href="/hot") What's hot?
+                        p.control.has-text-centered    
+                            a.button.is-light.is-rounded.is-outlined(href="/hot") <i class="fas fa-fire"></i>&nbsp;What's hot?
                             span &nbsp;&nbsp;
-                            a.button.is-light.is-rounded.is-outlined(href="/feed") Feed
+                            a.button.is-light.is-rounded.is-outlined(href="/feed") <i class="fas fa-rss"></i>&nbsp;Feed
                 if !authorized
                     h1.title.is-2 <i class="em em-lower_left_paintbrush" aria-role="presentation" aria-label=""></i>
                     h1.title <strong>Sketchel</strong>
                     h2.subtitle The newest platform to upload drawings/animations.   
                     div.field.has-text-centered
                         p.control.has-text-centered
-                            a.button.is-light.is-rounded.is-outlined(href="/signup") Register for Sketchel here.
+                            a.button.is-light.is-rounded.is-outlined(href="/signup") <i class="fas fa-user-plus"></i>&nbsp;Register for Sketchel here.
                             span &nbsp;&nbsp;
-                            a.button.is-light.is-rounded.is-outlined(href="/login") Or, you can login here.
+                            a.button.is-light.is-rounded.is-outlined(href="/login") <i class="fas fa-sign-in-alt"></i>&nbsp;Or, you can login here.
         
         
     include includes/footer              

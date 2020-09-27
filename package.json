@@ -4,12 +4,10 @@
   "description": "A modern, community-driven, social drawing website.",
   "main": "server.js",
   "scripts": {
-    "start": "npm run css-build && npm run dark-build && nodemon index.js",
-    "dev": "npm run css-build && npm run dark-build && cross-env HTTPS=false npm run start",
+    "start": "npm run css-build && nodemon index.js",
+    "dev": "npm run css-build && cross-env HTTPS=false npm run start",
     "css-build": "node-sass --omit-source-map-url public/scss/style.scss public/css/style.css",
-    "css-watch": "npm run css-build -- --watch",
-    "dark-build": "node-sass --omit-source-map-url public/scss/dark.scss public/css/dark.css",
-    "dark-watch": "npm run dark-build -- --watch"
+    "css-watch": "npm run css-build -- --watch"
   },
   "repository": {
     "type": "git",
@@ -46,6 +44,7 @@
     "bcrypt": "^5.0.0",
     "bulma-checkradio": "^1.1.1",
     "bulma-divider": "^0.2.0",
+    "bulma-slider": "^2.0.4",
     "bulma-switch": "^2.0.0",
     "bulma-tooltip": "^3.0.2",
     "canvas": "^2.6.1",
@@ -53,6 +52,7 @@
     "cross-env": "^6.0.3",
     "datauri": "^2.0.0",
     "express-session": "^1.17.1",
+    "gulp": "^4.0.2",
     "helmet": "^3.23.3",
     "http": "0.0.1-security",
     "markdown": "^0.5.0",
@@ -60,6 +60,7 @@
     "passport": "^0.4.1",
     "pug": "^2.0.4",
     "session": "^0.1.0",
+    "shortid": "^2.2.15",
     "uuid": "^3.4.0",
     "uuidv4": "^6.2.3",
     "xss": "^1.0.8",

@@ -6,8 +6,12 @@ html
     if !authorized
         include includes/navbar-1  
     script(src="https://code.jquery.com/jquery-3.4.1.min.js")
-    script(src="https://cdn.jsdelivr.net/npm/sweetalert2@9")
-    link(rel="stylesheet", href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css", integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T", crossorigin="anonymous")
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/bulma-slider@2.0.4/dist/js/bulma-slider.min.js"></script>
+    <link rel="stylesheet" href="@sweetalert2/theme-bulma/bulma.css">
+
+    <script src="sweetalert2/dist/sweetalert2.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
     script(src="/js/canvas.js")
     link(href="/css/canvas.css", rel="stylesheet")
     script(src="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.min.js")
@@ -15,18 +19,34 @@ html
     script(src="https://code.jquery.com/jquery-3.4.1.min.js",integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=", crossorigin="anonymous")
     <script>Sentry.init({dsn:'https://652559f06b804713a8e147fd6e3e3fe4@sentry.io/1820397'});</script>
     script(src="https://browser.sentry-cdn.com/5.8.0/bundle.min.js", integrity="sha384-qlxNoEAgNliJy7zXiR+uKx/fFAimdeVfEOK0SA5/wrXLioMmASbjvfVAMaQFKVI6", crossorigin="anonymous")
-    div.SketchelApp
-        div.SketchelCanvasWrapper
-            canvas.SketchelCanvas
-                Your browser doesn't support canvas... Are you using the first version of Internet Explorer or something??
-        div.UndoBtn
-        div.RedoBtn
-        div.ClearBtn
-        div.PencilBtn
-        div.EraserBtn
-        div.BucketBtn
-        div.ExportBtn
-        div.SaveBtn
-        div.BrushSliderWrapper
-            input.Brushslider(type="range", min="1", max="100", value="10") 
-        div.pickr
+    div.container 
+            div.box
+                div(align="center")
+                    div.SketchelApp
+                        .columns
+                            .column.one-quarter
+                                div.Export
+                                div.Save
+                            .column.two-thirds
+                                div.SketchelCanvasWrapper
+                                    canvas.SketchelCanvas
+                                        Your browser doesn't support canvas... Are you using the first version of Internet Explorer or something?
+                            .column.one-third
+                                div.Undo
+                                div.Redo
+                                br
+                                div.Clear
+                                br
+                                div.Pencil
+                                br
+                                div.Eraser
+                                br
+                                div.Bucket
+                                br
+                    div.BrushSliderWrapper
+                        input.slider.is-fullwidth.has-output(id="sliderWithValue", type="range", min="1", max="150", value="10")
+                        <output for="sliderWithValue">10</output> 
+                    div.pickr
+                    br
+    br
+    include includes/footer

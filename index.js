@@ -7,8 +7,9 @@ const bodyParser = require('body-parser')
 const session = require('express-session')
 const https = require('https')
 const http = require('http')
-const fs = require('fs');
-const app = express();
+const fs = require('fs')
+const app = express()
+const path = require('path')
 const helmet = require('helmet')
 const db = require('quick.db')
 
@@ -18,16 +19,15 @@ var users_db = new db.table('users')
 app.use(cookieParser())
 app.use((req, res, next) => {
   if (Object.keys(req.cookies).length > 0) {
-    next();
+    next()
+  } else {
+    res.render('cookie')
   }
-  else {
-    res.render('cookie');
-  }
-});
+})
 app.set('view engine', 'pug')
-app.use(bodyParser.json({limit: '50mb'}))
-app.use(bodyParser.urlencoded({ extended: false, limit: '50mb'}))
-app.use(express.static(__dirname + '/public'))
+app.use(bodyParser.json({ limit: '50mb' }))
+app.use(bodyParser.urlencoded({ extended: false, limit: '50mb' }))
+app.use(express.static(path.join(__dirname, '/public')))
 app.use(helmet())
 app.use(helmet.frameguard({ action: 'sameorigin' }))
 app.use(session({
@@ -43,21 +43,21 @@ app.use((req, res, next) => {
   next()
 })
 
-const static = require('./api/static')
+const stat = require('./api/static')
 const sitemap = require('./api/sitemap')
 const users = require('./api/users')
 const api = require('./api/api')
 const posts = require('./api/posts')
 
 /** Load pages */
-app.get('/', static.index);
-app.get('/welcome', static.welcome)
-app.get('/rules', static.rules)
-app.get('/terms', static.terms)
-app.get('/create', static.create) 
+app.get('/', stat.index)
+app.get('/welcome', stat.welcome)
+app.get('/rules', stat.rules)
+app.get('/terms', stat.terms)
+app.get('/create', stat.create)
 
-app.get('/login', static.login)
-app.get('/signup', static.signup)
+app.get('/login', stat.login)
+app.get('/signup', stat.signup)
 
 /** Post API */
 app.get('/like/:postID', posts.like)
@@ -68,7 +68,7 @@ app.get('/follow/:userId', posts.follow)
 /** API */
 app.get('/api/v1/get-user/:userId', api.get_user)
 app.get('/api/v1/get-avatar/:userId', api.get_avatar)
-app.get('/api/post', api.post_image)
+app.post('/api/post', api.post_image)
 
 /** Sitemaps */
 app.get('/sitemap', sitemap.sitemap)
@@ -82,9 +82,9 @@ app.post('/users/login', api.login_user)
 app.get('/logout', users.logout)
 app.get('/settings', users.settings)
 app.get('/profile', users.profile)
-app.get('/profile/:userId', users.user_profile);
-app.post('/profile/submit-changes', api.profile_submit);
-app.post('/settings/submit-changes', api.settings_submit);
+app.get('/profile/:userId', users.user_profile)
+app.post('/profile/submit-changes', api.profile_submit)
+app.post('/settings/submit-changes', api.settings_submit)
 
 /** 404 */
 function getQuote() {
@@ -100,8 +100,8 @@ function getUser(cookies) {
     return false
   }
   var username = session.split(".")[0]
-  var session_db = users_db.get(`${username}.session`)
-  if (session === session_db) {
+  var sessionDb = users_db.get(`${username}.session`)
+  if (session === sessionDb) {
     return username
   } else {
     return false
@@ -109,16 +109,16 @@ function getUser(cookies) {
 }
 
 app.use((req, res, next) => {
-  res.status(404);
+  res.status(404)
   var quote = getQuote()
-  var user = getUser(req.cookies) 
+  var user = getUser(req.cookies)
   if (!user) {
-    res.render('404', { title: "404", quote: quote })
+    res.render('404', { title: '404', quote: quote })
   } else {
-    var username = user;
-    res.render('404', { title: "404", quote: quote, username: username, authorized: "true" })
+    var username = user
+    res.render('404', { title: '404', quote: quote, username: username, authorized: true })
   }
-});
+})
 
 /** Start the listener */
 try {
@@ -129,14 +129,14 @@ try {
     key: privateKey,
     cert: certificate,
     ca: ca
-  };
-  const httpsServer = https.createServer(credentials, app);
+  }
+  const httpsServer = https.createServer(credentials, app)
   httpsServer.listen(443, () => {
-    console.log('Server started listening on port 443!');
-  });
-} catch(e) {
+    console.log('Server started listening on port 443!')
+  })
+} catch (e) {
   const httpServer = http.createServer(app)
   httpServer.listen(8000, () => {
-    console.log('Server started listening on port 8000!');
+    console.log('Server started listening on port 8000!')
   })
 }

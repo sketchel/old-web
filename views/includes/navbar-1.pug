@@ -1,7 +1,7 @@
 script(src="/js/navbar.js", crossorigin="anonymous")
 script(src="https://sketchel.art/js/jquery.js")
 script.
-    window.SketchelAuth = false;
+    window.SketchelAuth = false
 nav.navbar.is-spaced(role="navigation", aria-label="main navigation")
     a.navbar-brand(href="/")
         figure(class="image is-48x48")
@@ -19,9 +19,10 @@ nav.navbar.is-spaced(role="navigation", aria-label="main navigation")
             a.navbar-button(style="margin-right: 6px")
                 div.field
                     p.control.has-icons-left
-                        input.input.is-rounded(type="text", placeholder="Search")   
-                        span.icon.is-small.is-left
-                            i.fas.fa-search    
+                        input.input.is-rounded(type="text", placeholder="Search", id="searchInput")
+                        a(id="searchButton")   
+                            span.icon.is-small.is-left
+                                i.fas.fa-search    
 
             div.navbar-item
                 a.navbar-item(href="/login") <i class="fas fa-sign-in-alt"></i>&nbsp;Login
