@@ -83,10 +83,10 @@ window.onload = () => {
 							});
 							document.getElementsByClassName("sketchelLink")[0].value = "localhost:8000/post/" + msg;
 						},
-						error: function (xhr, status, error) {
+						error: function (msg) {
 							Swal.fire({
 								title: 'Oof!',
-								html: 'Something went wrong <code>' + JSON.stringify(xhr) + '</code>',
+								html: 'Something went wrong <code>' + JSON.stringify(msg) + '</code>',
 								icon: 'error'
 							});
 							console.log(msg)
